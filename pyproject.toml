@@ -10,17 +10,18 @@ packages = [{include = "rescuebox"}]
 rescuebox = "rescuebox.main:app"
 
 [tool.poetry.dependencies]
-python = "^3.11"
 requests = "^2.32.3"
+python = "^3.11"
+pyyaml = "^6.0.2"
 typer = "^0.12.5"
 
 rb-lib = { path = "src/rb-lib", develop = true }
-
 
 rb-file-utils = { path = "src/rb-file-utils", develop = true }
 rb-doc-parser = { path = "src/rb-doc-parser", develop = true }
 
 # Don't add new packages here, add them appropriately in the list above
+
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"

@@ -13,6 +13,7 @@ python = "^3.11"
 ollama = "*"
 typer = "*"
 rb-lib = "*"
+pyyaml = "*"
 
 
 [build-system]

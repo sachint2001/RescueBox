@@ -1,6 +1,7 @@
 import typer
+from rb.lib.docs import DOCS_GITHUB_URL, download_reference_doc  # type: ignore
 from rb.lib.ollama import use_ollama  # type: ignore
-from rb.lib.docs import DOCS_GITHUB_URL  # type: ignore
+from rb_doc_parser.chat import load_chat_config, stream_output
 
 app = typer.Typer()
 
@@ -19,6 +20,10 @@ def ask(question: str = typer.Argument(..., help="Ask a question against the doc
     """
     Ask a question against the docs
     """
-    print(question)
+    reference_doc = download_reference_doc()
+    chat_config = load_chat_config()
+    chat_config["prompt"]["system"] = chat_config["prompt"]["system"].format(
+        reference_doc=reference_doc
+    )
 
-
+    stream_output(question, chat_config)

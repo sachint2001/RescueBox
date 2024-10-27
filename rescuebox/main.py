@@ -1,9 +1,10 @@
 from importlib.metadata import version
-import typer
+
 import requests
+import typer
 from rich import print
 
-from rescuebox.plugins import plugins, experimental_plugins
+from rescuebox.plugins import experimental_plugins, plugins
 
 app = typer.Typer()
 
@@ -25,11 +26,13 @@ def list_plugins():
     for plugin in plugins:
         print(f"- {plugin.full_name}, {plugin.cli_name}")
 
+
 @management_app.command()
 def list_experimental_plugins():
     print("Experimental Plugins:")
     for plugin in experimental_plugins:
         print(f"- {plugin.full_name}, {plugin.cli_name}")
+
 
 @management_app.command()
 def ollama_site():
