@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "rescuebox"
+version = "0.1.0"
+description = ""
+authors = ["Jagath Jai Kumar <jagath.jaikumar@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.scripts]
+rescuebox = "rescuebox.main:app"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+typer = "^0.12.5"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+isort = "^5.13.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
