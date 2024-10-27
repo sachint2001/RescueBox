@@ -13,9 +13,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Display Python version
+      - name: Run tests
         run: |
           pip install poetry
-          poetry install
+          poetry install --with dev
           pytest
           
