@@ -4,7 +4,7 @@ import ollama
 import yaml
 from rich import print
 
-CHAT_CONFIG_PATH = os.path.join(os.path.dirname(__file__), "chat_config.yaml")
+CHAT_CONFIG_PATH = os.path.join(os.path.dirname(__file__), "chat_config.yml")
 
 
 def load_chat_config() -> dict:

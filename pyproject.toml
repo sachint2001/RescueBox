@@ -27,6 +27,7 @@ rb-doc-parser = { path = "src/rb-doc-parser", develop = true }
 black = "^24.10.0"
 isort = "^5.13.2"
 pytest = "^8.3.3"
+ruff = "^0.7.1"
 
 [build-system]
 requires = ["poetry-core"]
