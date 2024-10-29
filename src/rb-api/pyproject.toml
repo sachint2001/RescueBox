@@ -1,19 +1,17 @@
 [tool.poetry]
-name = "rb-doc-parser"
+name = "rb-api"
 version = "0.1.0"
 description = ""
 authors = ["Jagath Jai Kumar <jagath.jaikumar@gmail.com>"]
-
-[tool.poetry.scripts]
-rb-doc-parser = "rb_doc_parser.main:app"
+packages = [{ include = "rb", from = "." }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-ollama = "*"
-typer = "*"
-rb-lib = "*"
-pyyaml = "*"
+fastapi = "^0.115.4"
+uvicorn = "^0.32.0"
 
+rescuebox = { path = "../../", develop = true }
+rb-lib = { path = "../rb-lib", develop = true }
 
 [build-system]
 requires = ["poetry-core"]

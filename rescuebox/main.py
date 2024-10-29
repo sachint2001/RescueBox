@@ -14,39 +14,48 @@ __version__ = version("rescuebox")
 
 
 @management_app.command()
-def info():
-    print(f"RescueBox CLI with plugins {__version__}")
-    print("[blue] Ollama is required to use AI plugins - https://ollama.com/")
-    raise typer.Exit()
+def info() -> str:
+    message = f"RescueBox CLI with plugins {__version__}"
+    print(message)
+    return message
 
 
 @management_app.command()
-def list_plugins():
+def list_plugins() -> list[str]:
     print("Plugins:")
+    plugin_list = []
     for plugin in plugins:
         print(f"- {plugin.full_name}, {plugin.cli_name}")
+        plugin_list.append(plugin.cli_name)
+    return plugin_list
 
 
 @management_app.command()
-def list_experimental_plugins():
+def list_experimental_plugins() -> list[str]:
     print("Experimental Plugins:")
+    plugin_list = []
     for plugin in experimental_plugins:
         print(f"- {plugin.full_name}, {plugin.cli_name}")
+        plugin_list.append(plugin.cli_name)
+    return plugin_list
 
 
 @management_app.command()
-def ollama_site():
-    typer.launch("https://ollama.com/")
+def ollama_site() -> str:
+    ollama_url = "https://ollama.com/"
+    typer.launch(ollama_url)
+    return ollama_url
 
 
 @management_app.command()
-def ollama_check():
+def ollama_check() -> bool:
     response = requests.get("http://localhost:11434")
     if response.status_code == 200 and "Ollama" in response.text:
         print("[green] Ollama is installed and running")
+        return True
     else:
         print("[red] Ollama is not installed or not running")
-    raise typer.Exit()
+        return False
 
 
 app.add_typer(management_app, name="manage")

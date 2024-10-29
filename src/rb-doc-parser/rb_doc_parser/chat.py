@@ -16,7 +16,7 @@ def download_model(chat_config: dict) -> None:
     ollama.pull(chat_config["model"]["name"])
 
 
-def stream_output(user_content: str, chat_config: dict) -> None:
+def stream_output(user_content: str, chat_config: dict) -> str:
     download_model(chat_config)
 
     stream = ollama.chat(
@@ -29,5 +29,8 @@ def stream_output(user_content: str, chat_config: dict) -> None:
     )
 
     print("[bold green]Answer:")
+    buffer = ""
     for chunk in stream:
+        buffer += chunk["message"]["content"]
         print(chunk["message"]["content"], end="", flush=True)
+    return buffer

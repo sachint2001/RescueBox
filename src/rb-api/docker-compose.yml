@@ -1,0 +1,11 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: ../..  # Specify the directory containing Dockerfile and all necessary folders
+      dockerfile: src/rb-api/Dockerfile  # Specify the path to the Dockerfile within rb-api
+    ports:
+      - "8000:8000"  # Maps host port 8000 to container port 8000
+    environment:
+      PYTHON_ENV: production

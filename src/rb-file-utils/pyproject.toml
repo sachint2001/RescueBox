@@ -3,7 +3,6 @@ name = "rb-file-utils"
 version = "0.1.0"
 description = ""
 authors = ["Jagath Jai Kumar <jagath.jaikumar@gmail.com>"]
-readme = "README.md"
 packages = [{include = "rb_file_utils"}]
 
 [tool.poetry.scripts]

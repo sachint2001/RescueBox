@@ -6,8 +6,9 @@ app = typer.Typer()
 
 
 @app.command()
-@app.command("ls")
-def list_files(path: str = typer.Argument(..., help="The path to list files from")):
+def ls(
+    path: str = typer.Argument(..., help="The path to list files from"),
+) -> list[str]:
     """
     List files in a directory
     """
@@ -17,13 +18,15 @@ def list_files(path: str = typer.Argument(..., help="The path to list files from
     if not os.path.isdir(path):
         print(f"Path {path} is not a directory")
         raise typer.Abort()
+
     for file in os.listdir(path):
         print(file)
 
+    return os.listdir(path)
+
 
 @app.command()
-@app.command("open")
-def open_file(path: str = typer.Argument(..., help="The path to open")):
+def open(path: str = typer.Argument(..., help="The path to open")) -> str:
     """
     Open a file
     """
@@ -31,3 +34,4 @@ def open_file(path: str = typer.Argument(..., help="The path to open")):
         print(f"Path {path} does not exist")
         raise typer.Abort()
     typer.launch(path)
+    return path

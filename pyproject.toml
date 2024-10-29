@@ -3,7 +3,6 @@ name = "rescuebox"
 version = "0.1.0"
 description = ""
 authors = ["Jagath Jai Kumar <jagath.jaikumar@gmail.com>"]
-readme = "README.md"
 packages = [{include = "rescuebox"}]
 
 [tool.poetry.scripts]
@@ -29,6 +28,10 @@ isort = "^5.13.2"
 pytest = "^8.3.3"
 ruff = "^0.7.1"
 pre-commit = "^4.0.1"
+
+[tool.poetry.group.api.dependencies]
+uvicorn = "^0.32.0"
+fastapi = "^0.115.4"
 
 [build-system]
 requires = ["poetry-core"]

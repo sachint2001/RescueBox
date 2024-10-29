@@ -7,16 +7,19 @@ app = typer.Typer()
 
 
 @app.command()
-def open():
+def open() -> str:
     """
     Open docs in the browser
     """
     typer.launch(DOCS_GITHUB_URL)
+    return DOCS_GITHUB_URL
 
 
 @use_ollama
 @app.command()
-def ask(question: str = typer.Argument(..., help="Ask a question against the docs")):
+def ask(
+    question: str = typer.Argument(..., help="Ask a question against the docs"),
+) -> str:
     """
     Ask a question against the docs
     """
@@ -26,4 +29,4 @@ def ask(question: str = typer.Argument(..., help="Ask a question against the doc
         reference_doc=reference_doc
     )
 
-    stream_output(question, chat_config)
+    return stream_output(question, chat_config)
