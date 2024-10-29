@@ -756,6 +756,25 @@ files = [
 ]
 
 [[package]]
+name = "rb-api"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = "^3.11"
+files = []
+develop = true
+
+[package.dependencies]
+fastapi = "^0.115.4"
+rb-lib = {path = "../rb-lib", develop = true}
+rescuebox = {path = "../..", develop = true}
+uvicorn = "^0.32.0"
+
+[package.source]
+type = "directory"
+url = "src/rb-api"
+
+[[package]]
 name = "rb-doc-parser"
 version = "0.1.0"
 description = ""
@@ -999,4 +1018,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "d57bc1e36e6be6c9e6678562e833cbf0952d8533080243c25eccd90aa1224e16"
+content-hash = "3cafafde600637c4d222fc3534e0c99b9a6486859fdacc25660c36cc1d27d5ce"

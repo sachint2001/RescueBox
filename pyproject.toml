@@ -30,8 +30,7 @@ ruff = "^0.7.1"
 pre-commit = "^4.0.1"
 
 [tool.poetry.group.api.dependencies]
-uvicorn = "^0.32.0"
-fastapi = "^0.115.4"
+rb-api = { path = "src/rb-api", develop = true }
 
 [build-system]
 requires = ["poetry-core"]
