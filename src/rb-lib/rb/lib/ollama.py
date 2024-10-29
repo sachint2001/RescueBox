@@ -1,5 +1,6 @@
 import requests
 import typer
+from rich import print
 
 
 def check_ollama() -> bool:

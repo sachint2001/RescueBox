@@ -17,6 +17,3 @@ plugins: list[RescueBoxPlugin] = [
     RescueBoxPlugin(rb_file_utils_app, "fs", "File Utils"),
     RescueBoxPlugin(rb_doc_parser_app, "docs", "Docs Utils"),
 ]
-
-# Add experimental plugins here
-experimental_plugins: list[RescueBoxPlugin] = []
