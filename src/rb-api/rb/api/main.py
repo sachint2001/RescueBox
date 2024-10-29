@@ -58,7 +58,7 @@ for plugin in rescuebox_app.registered_groups:
     app.include_router(router, prefix=f"/{plugin.name}", tags=[plugin.name])
 
 
-@app.get("/")
+@app.get("/api/")
 def root():
     return {"message": "RescueBox API"}
 
@@ -66,4 +66,4 @@ def root():
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("rb.api.main:app", host="0.0.0.0", port=8000, reload=True)
