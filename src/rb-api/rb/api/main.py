@@ -1,7 +1,11 @@
+import os
 from functools import wraps
 from typing import Callable
 
-from fastapi import APIRouter, FastAPI, HTTPException
+from fastapi import APIRouter, FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from rb.api.models import CommandResult
 from rb.lib.stdout import Capturing  # type: ignore
 
@@ -15,6 +19,11 @@ app = FastAPI(
         "name": "Jagath Jai Kumar",
     },
 )
+
+app.mount(
+    "/static", StaticFiles(directory=os.path.join("rb", "api", "static")), name="static"
+)
+templates = Jinja2Templates(directory=os.path.join("rb", "api", "templates"))
 
 
 def safe_endpoint(callback: Callable, *args, **kwargs) -> CommandResult:
@@ -58,8 +67,14 @@ for plugin in rescuebox_app.registered_groups:
     app.include_router(router, prefix=f"/{plugin.name}", tags=[plugin.name])
 
 
+@app.get("/", response_class=HTMLResponse)
+def ui(request: Request):
+    # TODO: add the UI implementation here
+    return templates.TemplateResponse(request=request, name="index.html.j2")
+
+
 @app.get("/api/")
-def root():
+def api():
     return {"message": "RescueBox API"}
 
 
