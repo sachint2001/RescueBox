@@ -29,19 +29,11 @@ def command_callback(command: typer.models.CommandInfo):
     # Get the original callback signature
     original_signature = inspect.signature(command.callback)
 
-    # Modify the signature to include `streaming` and `help` parameters
+    # Modify the signature to include `streaming`
     new_params = list(original_signature.parameters.values())
     new_params.append(
         inspect.Parameter(
             "streaming",
-            inspect.Parameter.KEYWORD_ONLY,
-            default=False,
-            annotation=Optional[bool],
-        )
-    )
-    new_params.append(
-        inspect.Parameter(
-            "help",
             inspect.Parameter.KEYWORD_ONLY,
             default=False,
             annotation=Optional[bool],
@@ -53,12 +45,8 @@ def command_callback(command: typer.models.CommandInfo):
     @with_signature(new_signature)
     def wrapper(*args, **kwargs):
         # Extract additional parameters
-        help = kwargs.pop("help", False)
-
-        if help:
-            return CommandResult(
-                result=command.callback.__doc__, stdout=[], success=True, error=None
-            )
+        # TODO(Jagath): Implement streaming
+        streaming = kwargs.pop("streaming", False)  # noqa: F841
 
         # Call the static endpoint with the wrapped callback and arguments
         result = static_endpoint(command.callback, *args, **kwargs)
