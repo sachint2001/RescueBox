@@ -1,7 +1,7 @@
 from functools import wraps
 from typing import Callable
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from rb.api.models import CommandResult
 from rb.lib.stdout import Capturing  # type: ignore
 
@@ -10,7 +10,11 @@ from rescuebox.main import app as rescuebox_app
 cli_router = APIRouter()
 
 
-def safe_endpoint(callback: Callable, *args, **kwargs) -> CommandResult:
+def cli_flags(help: bool = False, stream: bool = False):
+    return {"help": help, "stream": stream}
+
+
+def static_endpoint(callback: Callable, *args, **kwargs) -> CommandResult:
     with Capturing() as stdout:
         try:
             result = callback(*args, **kwargs)
@@ -26,7 +30,7 @@ def safe_endpoint(callback: Callable, *args, **kwargs) -> CommandResult:
 def command_callback(callback: Callable):
     @wraps(callback)
     def wrapper(*args, **kwargs):
-        result = safe_endpoint(callback, *args, **kwargs)
+        result = static_endpoint(callback, *args, **kwargs)
         if not result.success:
             # Return the last 10 lines of stdout
             raise HTTPException(
@@ -47,5 +51,6 @@ for plugin in rescuebox_app.registered_groups:
             methods=["POST"],
             name=command.callback.__name__,
             response_model=CommandResult,
+            dependencies=[Depends(cli_flags)],
         )
     cli_router.include_router(router, prefix=f"/{plugin.name}", tags=[plugin.name])
