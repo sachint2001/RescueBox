@@ -2,9 +2,9 @@ from functools import wraps
 from typing import Callable
 
 from fastapi import APIRouter, FastAPI, HTTPException
-
 from rb.api.models import CommandResult
 from rb.lib.stdout import Capturing  # type: ignore
+
 from rescuebox.main import app as rescuebox_app
 
 app = FastAPI(

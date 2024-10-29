@@ -1,5 +1,5 @@
-from io import StringIO
 import sys
+from io import StringIO
 
 
 class Capturing(list):
