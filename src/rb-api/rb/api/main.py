@@ -1,15 +1,8 @@
 import os
-from functools import wraps
-from typing import Callable
 
-from fastapi import APIRouter, FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from rb.api.models import CommandResult
-from rb.lib.stdout import Capturing  # type: ignore
-
-from rescuebox.main import app as rescuebox_app
+from rb.api import routes
 
 app = FastAPI(
     title="RescueBoxAPI",
@@ -21,62 +14,14 @@ app = FastAPI(
 )
 
 app.mount(
-    "/static", StaticFiles(directory=os.path.join("rb", "api", "static")), name="static"
+    "/static",
+    StaticFiles(directory=os.path.join(os.path.dirname(__file__), "static")),
+    name="static",
 )
-templates = Jinja2Templates(directory=os.path.join("rb", "api", "templates"))
 
-
-def safe_endpoint(callback: Callable, *args, **kwargs) -> CommandResult:
-    with Capturing() as stdout:
-        try:
-            result = callback(*args, **kwargs)
-            success = True
-            error = None
-        except Exception as e:
-            result = None
-            success = False
-            error = f"Typer CLI aborted {e}"
-    return CommandResult(result=result, stdout=stdout, success=success, error=error)
-
-
-def command_callback(callback: Callable):
-    @wraps(callback)
-    def wrapper(*args, **kwargs):
-        result = safe_endpoint(callback, *args, **kwargs)
-        if not result.success:
-            # Return the last 10 lines of stdout
-            raise HTTPException(
-                status_code=400,
-                detail={"error": result.error, "stdout": result.stdout[-10:]},
-            )
-        return result
-
-    return wrapper
-
-
-for plugin in rescuebox_app.registered_groups:
-    router = APIRouter()
-    for command in plugin.typer_instance.registered_commands:
-        router.add_api_route(
-            f"/{command.callback.__name__}/",
-            endpoint=command_callback(command.callback),
-            methods=["POST"],
-            name=command.callback.__name__,
-            response_model=CommandResult,
-        )
-    app.include_router(router, prefix=f"/{plugin.name}", tags=[plugin.name])
-
-
-@app.get("/", response_class=HTMLResponse)
-def ui(request: Request):
-    # TODO: add the UI implementation here
-    return templates.TemplateResponse(request=request, name="index.html.j2")
-
-
-@app.get("/api/")
-def api():
-    return {"message": "RescueBox API"}
-
+app.include_router(routes.probes_router, prefix="/probes")
+app.include_router(routes.cli_router)
+app.include_router(routes.ui_router)
 
 if __name__ == "__main__":
     import uvicorn
