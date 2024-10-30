@@ -1,0 +1,82 @@
+/* Base styling */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+}
+
+/* Tree View Container */
+.tree-view-container {
+  padding: 12px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tree-view-title {
+  color: #333;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* TreeNode Styling */
+.tree-group {
+  color: #555;
+  font-weight: 600;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.tree-command {
+  color: #0066cc;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.tree-command:hover {
+  text-decoration: underline;
+}
+
+/* Panel Layout */
+.grid-column {
+  padding: 16px;
+  background-color: #fff;
+}
+
+.grid-column:first-child {
+  border-right: 1px solid #e0e0e0;
+}
+
+.grid-column:last-child {
+  overflow-y: auto;
+}
+
+/* Command Form */
+.command-form {
+  margin-top: 12px;
+}
+
+.command-form input {
+  margin-bottom: 8px;
+}
+
+.command-form button {
+  margin-top: 8px;
+}
+
+/* Command Output */
+.command-output {
+  margin-top: 16px;
+  background-color: #f1f1f1;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.command-output textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 8px;
+  font-family: monospace;
+  resize: vertical;
+}
