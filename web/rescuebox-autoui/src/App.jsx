@@ -48,6 +48,7 @@ const App = () => {
   }, []);
 
   const handleCommandClick = (command) => {
+    console.log(command)
     setSelectedCommand(command);
     setCommandOutput(''); // Clear output when selecting a new command
   };
@@ -72,7 +73,7 @@ const App = () => {
           {selectedCommand ? (
             <>
               <Text size="xl" weight={600} mb={8}>{selectedCommand.name}</Text>
-              <Text mb={12} color="dimmed">Execute command "{selectedCommand.name}"</Text>
+              <Text mb={12} >{selectedCommand.help}</Text>
 
               {/* Command Form */}
               <Stack spacing="xs" mb={12} className="command-form">

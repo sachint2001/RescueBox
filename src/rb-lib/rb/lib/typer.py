@@ -67,11 +67,12 @@ def typer_app_to_tree(app: typer.Typer) -> dict:
         logger.debug("%s%s" % (pre, node.name))
 
     def node_to_dict(node: Node) -> dict:
-        result = {"name": node.name, "is_group": node.is_group}
+        result = {"name": node.name, "is_group": node.is_group, "help": None}
         if not node.is_group:
             # the endpoint is the path without the rescuebox root
             result["endpoint"] = "/" + "/".join([_.name for _ in node.path][1:])
             result["inputs"] = get_inputs_from_signature(node.signature)
+            result["help"] = node.command.callback.__doc__
         if node.children:
             result["children"] = [node_to_dict(child) for child in node.children]
         return result
