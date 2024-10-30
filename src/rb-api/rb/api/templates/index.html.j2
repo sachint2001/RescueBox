@@ -27,7 +27,7 @@
                         <div class="help">{{ command.help }}</div>
                     {% else %}
                         <a title="{{ command.help|replace('\b', '')|escape }}"
-                           href="#" onclick="openCommand('{{ command.path }}', true, this);">{{ command.name }}</a>
+                           href="#" onclick="openCommand('{{ command.endpoint }}', true, this);">{{ command.name }}</a>
                     {% endif %}
                     {%- if command.children -%}
                         <ul class="submenu">{{ loop(command.children) }}</ul>
