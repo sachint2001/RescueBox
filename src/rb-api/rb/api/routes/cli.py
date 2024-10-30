@@ -48,7 +48,6 @@ def command_callback(command: typer.models.CommandInfo):
     """Create a FastAPI endpoint handler for a Typer CLI command"""
     # Get the original callback signature
     original_signature = inspect.signature(command.callback)
-
     # Add streaming parameter to signature
     new_params = list(original_signature.parameters.values())
     streaming_param = inspect.Parameter(
