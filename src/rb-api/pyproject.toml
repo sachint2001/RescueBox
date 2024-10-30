@@ -15,8 +15,6 @@ typer = "*"
 
 rescuebox = { path = "../../", develop = true }
 rb-lib = { path = "../rb-lib", develop = true }
-anytree = "^2.12.1"
-loguru = "^0.7.2"
 
 
 [build-system]

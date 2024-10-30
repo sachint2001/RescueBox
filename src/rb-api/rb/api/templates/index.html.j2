@@ -1,48 +1,22 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>RescueBox API</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='pure.css') }}"/>
-    <link rel="stylesheet" href="{{ url_for('static', path='panes.css') }}"/>
-    <link rel="stylesheet" href="{{ url_for('static', path='rb_web.css') }}"/>
-
-    <script src="{{ url_for('static', path='split.js') }}"></script>
-    <script src="{{ url_for('static', path='panes.js') }}"></script>
-    <script src="{{ url_for('static', path='open_form.js') }}"></script>
-    <script src="{{ url_for('static', path='post_and_read.js') }}"></script>
-    <script src="{{ url_for('static', path='copy_to_clipboard.js') }}"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', path='index/main.css') }}"/>
+    <title>FastAPI + React</title>
 </head>
 <body>
+    <!-- Embed JSON data in a script tag -->
+    <script id="tree" type="application/json">
+        {{ tree | safe }}
+    </script>
 
+    <!-- Mounting point for React -->
+    <div id="react-root"></div>
 
-<div class="split content split-horizontal" id="left-pane">
-    <div class="command-tree" id="command-tree">
-        <h1>RescueBox API</h1>
-
-        <ul>
-            {%- for command in tree.children recursive %}
-                <li title="{{ command.help|replace('\b', '')|escape }}">
-                    {% if command.is_group %}
-                        {{ command.name|title }}
-                        <div class="help">{{ command.help }}</div>
-                    {% else %}
-                        <a title="{{ command.help|replace('\b', '')|escape }}"
-                           href="#" onclick="openCommand('{{ command.endpoint }}', true, this);">{{ command.name }}</a>
-                    {% endif %}
-                    {%- if command.children -%}
-                        <ul class="submenu">{{ loop(command.children) }}</ul>
-                    {%- endif %}</li>
-            {%- endfor %}
-        </ul>
-
-    </div>
-</div>
-<div class="split content split-horizontal" id="right-pane">
-
-    <div id="form-div">
-        <p>Select a command in left pane.</p>
-    </div>
-</div>
-
+    <!-- Link to the compiled React bundle -->
+    <script type="module" src="{{ url_for('static', path='index/main.js') }}"></script>
 </body>
 </html>

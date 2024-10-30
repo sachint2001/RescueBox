@@ -895,10 +895,8 @@ files = []
 develop = true
 
 [package.dependencies]
-anytree = "^2.12.1"
 fastapi = "^0.115.4"
 jinja2 = "^3.1.4"
-loguru = "^0.7.2"
 makefun = "^1.15.6"
 rb-lib = {path = "../rb-lib", develop = true}
 rescuebox = {path = "../..", develop = true}
@@ -954,6 +952,8 @@ files = []
 develop = true
 
 [package.dependencies]
+anytree = "*"
+loguru = "*"
 ollama = "*"
 requests = "*"
 typer = "*"

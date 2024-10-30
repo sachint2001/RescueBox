@@ -1,3 +1,7 @@
+"""
+This router contains dynamic routes only! Do not add static routes here.
+"""
+
 import inspect
 from typing import Callable, Generator, Optional
 
