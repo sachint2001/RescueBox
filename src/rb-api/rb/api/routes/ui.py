@@ -18,7 +18,6 @@ templates = Jinja2Templates(
 @ui_router.get("/")
 async def interface(request: Request):
     tree = _typer_app_to_tree(rescuebox_app)
-    logger.debug(tree)
     return templates.TemplateResponse(
         "index.html.j2", {"request": request, "tree": tree}
     )
@@ -32,7 +31,10 @@ def _typer_app_to_tree(app: typer.Typer) -> dict:
         # Add groups recursively
         for group in getattr(typer_app, "registered_groups", []):
             group_node = Node(
-                group.name, parent=parent_node, command=None, is_group=True
+                group.name,
+                parent=parent_node,
+                command=None,
+                is_group=True,
             )
             # Recursively add any nested groups/commands
             add_commands_to_node(group.typer_instance, group_node)
@@ -40,12 +42,12 @@ def _typer_app_to_tree(app: typer.Typer) -> dict:
         # Add commands at this level
         for command in getattr(typer_app, "registered_commands", []):
             command_name = getattr(command, "name", None) or command.callback.__name__
+
             Node(
                 command_name,
                 parent=parent_node,
                 command=command,
                 is_group=False,
-                help=command.callback.__doc__,
             )
 
     # Build the full tree structure
@@ -56,7 +58,10 @@ def _typer_app_to_tree(app: typer.Typer) -> dict:
         logger.debug("%s%s" % (pre, node.name))
 
     def node_to_dict(node: Node) -> dict:
-        result = {"name": node.name, "command": node.command}
+        result = {"name": node.name, "command": node.command, "is_group": node.is_group}
+        if not node.is_group:
+            # the endpoint is the path without the rescuebox root
+            result["endpoint"] = "/" + "/".join([_.name for _ in node.path][1:])
         if node.children:
             result["children"] = [node_to_dict(child) for child in node.children]
         return result
