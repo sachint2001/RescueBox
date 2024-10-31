@@ -1,4 +1,5 @@
 import os
+from typing import Annotated
 
 import typer
 
@@ -26,7 +27,7 @@ def ls(
 
 
 @app.command()
-def open(path: str = typer.Argument(..., help="The path to open")) -> str:
+def op(path: str = typer.Argument(..., help="The path to open")) -> str:
     """
     Open a file
     """
@@ -34,4 +35,19 @@ def open(path: str = typer.Argument(..., help="The path to open")) -> str:
         print(f"Path {path} does not exist")
         raise typer.Abort()
     typer.launch(path)
+    return path
+
+
+@app.command()
+def head(
+    path: str = typer.Argument(..., help="The path to the file to cat"),
+    n: Annotated[int, typer.Option("-n", help="The number of lines to print")] = 10,
+) -> str:
+    """
+    Print the first n lines of a file
+    """
+    with open(path, "r") as f:
+        for _ in range(n):
+            print(f.readline())
+
     return path

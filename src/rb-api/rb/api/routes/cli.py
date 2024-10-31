@@ -3,6 +3,7 @@ This router contains dynamic routes only! Do not add static routes here.
 """
 
 import inspect
+import time
 from typing import Callable, Generator, Optional
 
 import typer
@@ -35,20 +36,23 @@ def static_endpoint(callback: Callable, *args, **kwargs) -> CommandResult:
 
 def streaming_endpoint(callback: Callable, *args, **kwargs) -> Generator:
     """Execute a CLI command and stream the results"""
-    line_buffer = []
+    line_buffer = ""
     for line in capture_stdout_as_generator(callback, *args, **kwargs):
-        line_buffer.append(line)
+        line_buffer += line
         result = CommandResult(
             result=line, stdout=line_buffer, success=True, error=None
         )
         yield result.model_dump_json()
+        time.sleep(0.01)  # Sleep to prevent flooding the stream
 
 
 def command_callback(command: typer.models.CommandInfo):
     """Create a FastAPI endpoint handler for a Typer CLI command"""
+    # TODO: this works, but it expects all the inputs as query parameters
+    # We should be able to handle the inputs as a JSON body
+
     # Get the original callback signature
     original_signature = inspect.signature(command.callback)
-
     # Add streaming parameter to signature
     new_params = list(original_signature.parameters.values())
     streaming_param = inspect.Parameter(
@@ -63,7 +67,7 @@ def command_callback(command: typer.models.CommandInfo):
     @with_signature(new_signature)
     def wrapper(*args, **kwargs):
         streaming = kwargs.pop("streaming", False)
-
+        print(streaming)
         if streaming:
             return StreamingResponse(
                 streaming_endpoint(command.callback, *args, **kwargs)
@@ -93,7 +97,7 @@ for plugin in rescuebox_app.registered_groups:
 
     for command in plugin.typer_instance.registered_commands:
         router.add_api_route(
-            f"/{command.callback.__name__}/",
+            f"/{command.callback.__name__}",
             endpoint=command_callback(command),
             methods=["POST"],
             name=command.callback.__name__,

@@ -1,42 +1,82 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* Base styling */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Tree View Container */
+.tree-view-container {
+  padding: 12px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.tree-view-title {
+  color: #333;
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* TreeNode Styling */
+.tree-group {
+  color: #555;
+  font-weight: 600;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
-.card {
-  padding: 2em;
+.tree-command {
+  color: #0066cc;
+  cursor: pointer;
+  text-decoration: none;
 }
 
-.read-the-docs {
-  color: #888;
+.tree-command:hover {
+  text-decoration: underline;
+}
+
+/* Panel Layout */
+.grid-column {
+  padding: 16px;
+  background-color: #fff;
+}
+
+.grid-column:first-child {
+  border-right: 1px solid #e0e0e0;
+}
+
+.grid-column:last-child {
+  overflow-y: auto;
+}
+
+/* Command Form */
+.command-form {
+  margin-top: 12px;
+}
+
+.command-form input {
+  margin-bottom: 8px;
+}
+
+.command-form button {
+  margin-top: 8px;
+}
+
+/* Command Output */
+.command-output {
+  margin-top: 16px;
+  background-color: #f1f1f1;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.command-output textarea {
+  width: 100%;
+  min-height: 250px;
+  padding: 8px;
+  font-family: monospace;
+  resize: vertical;
 }
