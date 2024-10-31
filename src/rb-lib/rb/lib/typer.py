@@ -2,8 +2,7 @@ import inspect
 import typing
 
 import typer
-from anytree import Node, RenderTree
-from loguru import logger
+from anytree import Node
 
 
 def get_inputs_from_signature(signature: inspect.Signature) -> list[dict]:
@@ -61,10 +60,6 @@ def typer_app_to_tree(app: typer.Typer) -> dict:
 
     # Build the full tree structure
     add_commands_to_node(app, root)
-
-    # Debug print the tree
-    for pre, fill, node in RenderTree(root):
-        logger.debug("%s%s" % (pre, node.name))
 
     def node_to_dict(node: Node) -> dict:
         result = {"name": node.name, "is_group": node.is_group, "help": None}

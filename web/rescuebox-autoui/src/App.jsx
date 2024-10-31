@@ -63,11 +63,56 @@ const App = () => {
       : {},
   });
 
-  const handleRunCommand = () => {
-    // Simulate command execution with form values
-    setCommandOutput(`Executing ${selectedCommand.name} with parameters ${JSON.stringify(form.values)}...\nOutput: Command executed successfully!`);
+  const handleRunCommand = async () => {
+    if (!selectedCommand) return;
+  
+    try {
+      const response = await fetch(selectedCommand.endpoint + '?streaming=true', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form.values),
+      });
+  
+      // Check if the response has a readable stream
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let resultText = '';
+      let doneReading = false;
+  
+      while (!doneReading) {
+        // Read the next chunk from the stream
+        const { value, done } = await reader.read();
+        
+        if (done) break;
+  
+        // Decode the current chunk of the stream
+        const chunk = decoder.decode(value, { stream: true });
+        
+        // Try parsing the current result as JSON to handle success/failure logic
+        try {
+          const commandResult = JSON.parse(chunk);
+  
+          if (commandResult.success) {
+            // Append stdout to the output as it arrives
+            setCommandOutput(commandResult.stdout);
+          } else {
+            // If success is false, stop streaming and show stdout + error
+            setCommandOutput(`${commandResult.stdout}\nError: ${parsedResult.error}`);
+            reader.cancel(); // Stop reading further chunks
+            doneReading = true;
+          }
+        } catch (error) {
+          // If JSON parsing fails, continue to accumulate the text until we have a valid JSON
+          setCommandOutput(resultText);
+        }
+      }
+    } catch (error) {
+      setCommandOutput(`Failed to execute command. Please try again. ${error}`);
+    }
   };
-
+  
   return (
     <MantineProvider>
       <Grid grow>
