@@ -1,7 +1,7 @@
 // React imports
 import { useState, useEffect } from 'react';
 import '@mantine/core/styles.css';
-import { MantineProvider, Box, Stack, Text, Anchor, Grid, Button, Textarea, Input, Checkbox } from '@mantine/core';
+import { MantineProvider, Box, Stack, Text, Anchor, Grid, Button, Textarea, Input, Checkbox, Group } from '@mantine/core';
 import { useForm } from '@mantine/form';
 
 // Import CSS
@@ -65,14 +65,16 @@ const App = () => {
 
   const handleRunCommand = async () => {
     if (!selectedCommand) return;
+
+    const inputs = {...form.values, 'streaming': true}
   
     try {
-      const response = await fetch(selectedCommand.endpoint + '?streaming=true', {
+      const response = await fetch(selectedCommand.endpoint + '?' + new URLSearchParams(inputs).toString(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form.values),
+        body: form.values,
       });
   
       // Check if the response has a readable stream
@@ -93,6 +95,7 @@ const App = () => {
         // Try parsing the current result as JSON to handle success/failure logic
         try {
           const commandResult = JSON.parse(chunk);
+          resultText = commandResult.stdout;
   
           if (commandResult.success) {
             // Append stdout to the output as it arrives
@@ -112,6 +115,16 @@ const App = () => {
       setCommandOutput(`Failed to execute command. Please try again. ${error}`);
     }
   };
+
+  const handleReset = () => {
+    if (selectedCommand) {
+      // Reset form to initial values based on selected command
+
+      // TODO: reset does not clear the form values
+      form.reset();
+      setCommandOutput('');
+    }
+  };
   
   return (
     <MantineProvider>
@@ -128,7 +141,10 @@ const App = () => {
         <Grid.Col span={8} className="grid-column">
           {selectedCommand ? (
             <>
-              <Text size="xl" weight={600} mb={8}>{selectedCommand.name}</Text>
+              <Group justify="space-between" mb={8}>
+                <Text size="xl" weight={600}>{selectedCommand.name}</Text>
+                <Button variant="light" onClick={handleReset}>Reset</Button>
+              </Group>
               <Text mb={12} color="dimmed">{selectedCommand.help || 'No description available.'}</Text>
 
               {/* Command Form */}
@@ -166,7 +182,7 @@ const App = () => {
 
               {/* Command Output */}
               <Text mt={16} mb={4} weight={500}>Command Output:</Text>
-              <Textarea value={commandOutput} readOnly minRows={6} className="command-output" />
+              <Textarea value={commandOutput} readOnly minRows={10} className="command-output" />
             </>
           ) : (
             <Text>Select a command from the left panel to see details</Text>

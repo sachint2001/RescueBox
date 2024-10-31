@@ -48,6 +48,9 @@ def streaming_endpoint(callback: Callable, *args, **kwargs) -> Generator:
 
 def command_callback(command: typer.models.CommandInfo):
     """Create a FastAPI endpoint handler for a Typer CLI command"""
+    # TODO: this works, but it expects all the inputs as query parameters
+    # We should be able to handle the inputs as a JSON body
+
     # Get the original callback signature
     original_signature = inspect.signature(command.callback)
     # Add streaming parameter to signature
