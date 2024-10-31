@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 
 from fastapi import FastAPI
@@ -25,5 +26,7 @@ app.include_router(routes.ui_router)
 
 if __name__ == "__main__":
     import uvicorn
+
+    multiprocessing.freeze_support()  # For Windows support
 
     uvicorn.run("rb.api.main:app", host="0.0.0.0", port=8000, reload=True)
