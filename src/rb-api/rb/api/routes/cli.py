@@ -1,5 +1,6 @@
 import inspect
 import time
+import json
 import logging
 from typing import Callable, Generator, Optional, Any
 from pydantic import BaseModel
@@ -10,7 +11,16 @@ from fastapi.responses import StreamingResponse
 from makefun import with_signature
 from rb.lib.stdout import Capturing  # type: ignore
 from rb.lib.stdout import capture_stdout_as_generator
-from rb.api.models import ResponseBody, TextResponse
+from rb.api.models import (
+    ResponseBody,
+    FileResponse,
+    DirectoryResponse,
+    MarkdownResponse,
+    TextResponse,
+    BatchFileResponse,
+    BatchTextResponse,
+    BatchDirectoryResponse,
+)
 
 from rescuebox.main import app as rescuebox_app
 
@@ -40,16 +50,49 @@ def static_endpoint(callback: Callable, *args, **kwargs) -> ResponseBody:
 
 
 def streaming_endpoint(callback: Callable, *args, **kwargs) -> Generator:
-    """Execute a CLI command and stream the results"""
+    """Execute a CLI command and stream the results with proper response handling"""
 
     logger.debug(f"🚀 Streaming started for command: {callback.__name__} with args={args}, kwargs={kwargs}")
 
     for line in capture_stdout_as_generator(callback, *args, **kwargs):
-        response = ResponseBody(root=TextResponse(value=line)).model_dump_json()
-        
-        logger.debug(f"Streaming output: {response}")  # Debug log for each response
+        try:
+            # Attempt to parse the output if it's JSON-like
+            parsed_line = json.loads(line) if isinstance(line, str) and line.lstrip().startswith("{") else line
 
-        yield response  # Ensure it's yielding responses
+            response_body = None
+
+            # Dynamically determine the response type
+            if isinstance(parsed_line, dict):
+                if "texts" in parsed_line:  # Matches BatchTextResponse structure
+                    response_body = ResponseBody(root=BatchTextResponse(**parsed_line))
+                elif "files" in parsed_line:  # Matches BatchFileResponse structure
+                    response_body = ResponseBody(root=BatchFileResponse(**parsed_line))
+                elif "directories" in parsed_line:  # Matches BatchDirectoryResponse
+                    response_body = ResponseBody(root=BatchDirectoryResponse(**parsed_line))
+                elif "path" in parsed_line:  # Matches FileResponse or DirectoryResponse
+                    response_body = ResponseBody(
+                        root=DirectoryResponse(**parsed_line) if parsed_line.get("is_directory") else FileResponse(**parsed_line)
+                    )
+                elif "markdown" in parsed_line:  # Matches MarkdownResponse
+                    response_body = ResponseBody(root=MarkdownResponse(**parsed_line))
+                else:
+                    response_body = ResponseBody(root=TextResponse(value=str(parsed_line)))
+
+            elif isinstance(parsed_line, list):
+                response_body = ResponseBody(root=BatchTextResponse(texts=[TextResponse(value=str(item)) for item in parsed_line]))
+
+            else:
+                # Default to TextResponse if it's a simple string
+                response_body = ResponseBody(root=TextResponse(value=str(parsed_line)))
+
+            response_json = response_body.model_dump_json()
+            logger.debug(f"Streaming output: {response_json}")
+            yield response_json  # Yield properly formatted JSON response
+
+        except Exception as e:
+            logger.error(f"Error processing streaming output: {e}")
+            yield ResponseBody(root=TextResponse(value=f"Error: {str(e)}")).model_dump_json()
+
         time.sleep(0.01)
 
 

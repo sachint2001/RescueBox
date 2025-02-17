@@ -14,12 +14,12 @@ class RescueBoxPlugin:
     full_name: str | None
 
 
-# ✅ Define plugins here (NOT dynamically in main.py)
+# Define plugins here (NOT dynamically in main.py)
 plugins: list[RescueBoxPlugin] = [
     RescueBoxPlugin(rb_file_utils_app, "fs", "File Utils"),
     RescueBoxPlugin(rb_doc_parser_app, "docs", "Docs Utils"),
     RescueBoxPlugin(rb_audio_transcription_app, "audio", "Audio transcription library"),
 ]
 
-# ✅ Ensure this module is importable
+# Ensure this module is importable
 __all__ = ["plugins"]

@@ -28,7 +28,7 @@ def transcribe(
     results = model.transcribe_batch(files)
     results_dict = {r["file_path"]: r["result"] for r in results}
 
-    print(f"✅ Transcription Result: {results_dict}")  # Debug log
+    print(f"Transcription Result: {results_dict}")  # Debug log
 
     return generate_text_response(results_dict)
         

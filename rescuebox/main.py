@@ -22,7 +22,7 @@ def list_plugins() -> list[str]:
     """
     List all plugins
     """
-    from rescuebox.plugins import plugins  # ✅ Lazy Import
+    from rescuebox.plugins import plugins  # Lazy Import
     print("Plugins:")
     plugin_list = []
     for plugin in plugins:
@@ -34,9 +34,9 @@ def list_plugins() -> list[str]:
 app.add_typer(management_app, name="manage")
 
 
-# ✅ Delay plugin loading to avoid circular import
+# Delay plugin loading to avoid circular import
 def load_plugins():
-    from rescuebox.plugins import plugins  # ✅ Import from __init__.py now
+    from rescuebox.plugins import plugins  # Import from __init__.py now
     return plugins
 
 
