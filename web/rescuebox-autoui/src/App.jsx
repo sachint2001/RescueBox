@@ -95,6 +95,9 @@ const App = () => {
     const queryString = new URLSearchParams(inputs).toString();
     const url = `${selectedCommand.endpoint}?${queryString}`;
 
+    // Reset command output before starting
+    setCommandOutput("");
+
     try {
       const response = await fetch(url, {
         method: "POST",
