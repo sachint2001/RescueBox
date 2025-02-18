@@ -1,14 +1,9 @@
 from importlib.metadata import version
-
 import typer
 from rich import print
 
-from rescuebox.plugins import plugins
-
 app = typer.Typer()
-
 management_app = typer.Typer()
-
 __version__ = version("rescuebox")
 
 
@@ -27,6 +22,7 @@ def list_plugins() -> list[str]:
     """
     List all plugins
     """
+    from rescuebox.plugins import plugins  # Lazy Import
     print("Plugins:")
     plugin_list = []
     for plugin in plugins:
@@ -36,6 +32,15 @@ def list_plugins() -> list[str]:
 
 
 app.add_typer(management_app, name="manage")
+
+
+# Delay plugin loading to avoid circular import
+def load_plugins():
+    from rescuebox.plugins import plugins  # Import from __init__.py now
+    return plugins
+
+
+plugins = load_plugins()
 
 for plugin in plugins:
     app.add_typer(plugin.app, name=plugin.cli_name)

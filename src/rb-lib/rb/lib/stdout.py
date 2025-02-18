@@ -17,14 +17,25 @@ class Capturing(list):
         sys.stdout = self._stdout
 
 
-def capture_stdout_as_generator(
-    func: Callable, *args, **kwargs
-) -> Generator[str, None, None]:
-    stdout_buffer = io.StringIO()
-    with contextlib.redirect_stdout(stdout_buffer):
-        func(*args, **kwargs)
+def capture_stdout_as_generator(func, *args, **kwargs):
+    import sys
+    import io
 
-    # Go to the start of the buffer and yield each line
-    stdout_buffer.seek(0)
-    for line in stdout_buffer:
-        yield line
+    old_stdout = sys.stdout
+    sys.stdout = buffer = io.StringIO()
+
+    try:
+        func(*args, **kwargs)  # Run the function
+        sys.stdout.flush()
+        buffer.seek(0)
+
+        while True:
+            line = buffer.readline()
+            if not line:
+                break  # Stop streaming when done
+            
+            print(f"🔥 Debug: Captured output -> {line.strip()}")  # Debugging print
+            yield line.strip()  # Ensure it's yielding non-empty lines
+
+    finally:
+        sys.stdout = old_stdout

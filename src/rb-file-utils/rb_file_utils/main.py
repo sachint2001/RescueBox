@@ -14,14 +14,14 @@ def ls(
     List files in a directory
     """
     if not os.path.exists(path):
-        print(f"Path {path} does not exist")
+        typer.echo(f"Path {path} does not exist")
         raise typer.Abort()
     if not os.path.isdir(path):
-        print(f"Path {path} is not a directory")
+        typer.echo(f"Path {path} is not a directory")
         raise typer.Abort()
 
     for file in os.listdir(path):
-        print(file)
+        typer.echo(file)
 
     return os.listdir(path)
 
@@ -32,7 +32,7 @@ def op(path: str = typer.Argument(..., help="The path to open")) -> str:
     Open a file
     """
     if not os.path.exists(path):
-        print(f"Path {path} does not exist")
+        typer.echo(f"Path {path} does not exist")
         raise typer.Abort()
     typer.launch(path)
     return path
@@ -48,6 +48,6 @@ def head(
     """
     with open(path, "r") as f:
         for _ in range(n):
-            print(f.readline())
+            typer.echo(f.readline())
 
     return path

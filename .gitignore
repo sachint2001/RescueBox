@@ -161,3 +161,10 @@ cython_debug/
 #.idea/
 
 .ruff_cache/
+
+# project specific file ignores
+rescuebox/bin/
+rescuebox/lib/
+rescuebox/pyvenv.cfg
+src/rb-api/rb/api/static/index/main.js
+**/*/.DS_Store
