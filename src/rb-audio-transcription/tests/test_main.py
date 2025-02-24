@@ -1,13 +1,12 @@
 ''' test audio typer cli commands and fastapi api calls'''
-import os
+import json
 from pathlib import Path
-import logging
+from fastapi.encoders import jsonable_encoder
 from fastapi.testclient import TestClient
-import pytest
 from typer.testing import CliRunner
 # this app is for cli testing using typer CliRunner
-from rb_audio_transcription.main import app as cli_app
-from rb.api.models import API_APPMETDATA, API_ROUTES, PLUGIN_SCHEMA_SUFFIX
+from rb_audio_transcription.main import DirInputs, app as cli_app
+from rb.api.models import API_APPMETDATA, API_ROUTES, PLUGIN_SCHEMA_SUFFIX, DirectoryInput, ResponseBody
 # this app is for fastapi testing using TestClient
 from rb.api.main import app as api_app
 
@@ -42,27 +41,53 @@ def test_schema_command():
 
 def test_negative_test():
     ''' audio transcribe command cli to transcribe with invalid audio file''' # type: ignore
-    cwd = Path.cwd()
-    full_path = os.path.join(
-        cwd, "src", "rb-audio-transcription", "tests", "does_not_exist.mp3"
-    )
+    bad_full_path = Path.cwd().joinpath('src', 'rb-audio-transcription', 'bad_tests')
     result = runner.invoke(
-        cli_app, ['transcribe', full_path, "'e1': 'example', 'e2' : 0.1, 'e3': 1"]
+        cli_app, ['transcribe', jsonable_encoder(bad_full_path), "'e1': 'example', 'e2' : 0.1, 'e3': 1"]
     )
+    print("negative test ",result.stdout)
     assert "Aborted." in result.stdout
     assert result.exit_code == 1
 
-def test_transcribe_command():
-    r''' call audio transcribe command cli to transcribe a sample audio file'''
-    cwd = Path.cwd()
-    full_path = os.path.join(
-        cwd, "src", "rb-audio-transcription", "tests", "sample.mp3"
-    )
+def test_cli_transcribe_command():
+    r''' call audio transcribe command typer cli to transcribe a sample audio file'''
+    full_path = Path.cwd() / 'src' / 'rb-audio-transcription' / 'tests'
+    print("cli test", full_path)
     result = runner.invoke(
-        cli_app, ['transcribe', full_path, "'e1': 'example', 'e2' : 0.1, 'e3': 1"]
+        cli_app, ['transcribe', jsonable_encoder(full_path), "'e1': 'example', 'e2' : 0.1, 'e3': 1"]
     )
-    assert result.stdout is ""
+    assert result.stdout is not None
     assert result.exit_code == 0
+
+def test_api_transcribe_command():
+    r''' call audio transcribe command fastapi to transcribe a sample audio file'''
+    
+    full_path = Path.cwd() / 'src' / 'rb-audio-transcription' / 'tests'
+
+    # force validation of DirectoryInput full_path
+    DirInputs(dir_input=DirectoryInput(path=full_path))
+
+    audio = {"inputs": {"dir_input": {
+                         "path": jsonable_encoder(full_path) 
+                        } 
+                       },
+             "parameters": {'example_parameter': 'example',
+                            'example_parameter2' : 0.1,
+                            'example_parameter3': 1
+                            }
+            }
+
+    print(json.dumps(audio))
+    response = client.post('/audio/transcribe', json=audio)
+    
+    assert response is not None
+    assert response.status_code == 200
+    output = ResponseBody(**response.json())
+    assert output is not None
+    txt = [txt.value for txt in output.root.texts]
+    assert txt is not None
+    assert len(txt) > 0
+    assert 'Twinkle twinkle little star' in txt[0]
 
 def test_client_routes():
     ''' call fastapi /api/routes '''
