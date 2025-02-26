@@ -46,7 +46,7 @@ app = FastAPI(
     title="RescueBoxAPI",
     summary="RescueBox is a set of tools for file system investigations.",
     version="0.1.0",
-    debug=True,
+    debug=False,
     contact={
         "name": "Umass Amherst RescuBox Team",
     },
@@ -72,4 +72,4 @@ if __name__ == "__main__":
 
     multiprocessing.freeze_support()  # For Windows support
 
-    uvicorn.run("rb.api.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=False)
