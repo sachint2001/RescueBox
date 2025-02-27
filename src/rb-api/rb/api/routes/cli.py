@@ -22,7 +22,7 @@ from rb.api.models import (
 )
 from rb.api.models import API_APPMETDATA, API_ROUTES, PLUGIN_SCHEMA_SUFFIX
 from rescuebox.main import app as rescuebox_app
-logging.basicConfig(level=logging.DEBUG)
+#os.environ['PYTHONASYNCIODEBUG'] = '0'
 logger = logging.getLogger(__name__)
 
 cli_to_api_router = APIRouter()
@@ -34,7 +34,7 @@ def static_endpoint(callback: Callable, *args, **kwargs) -> ResponseBody:
         try:
             logger.debug(f"Executing CLI command: {callback.__name__} with args={args}, kwargs={kwargs}")
             result = callback(*args, **kwargs)  # Ensure this returns a valid Pydantic model
-            
+
             logger.debug(f"CLI command output type: {type(result)}")
 
             if isinstance(result, ResponseBody):  # Ensure it's a valid Pydantic model
@@ -129,7 +129,7 @@ def command_callback(command: typer.models.CommandInfo):
             return StreamingResponse(
                 streaming_endpoint(command.callback, *args, **kwargs)
             )
-
+            
         return static_endpoint(command.callback, *args, **kwargs)
 
     wrapper.__name__ = command.callback.__name__

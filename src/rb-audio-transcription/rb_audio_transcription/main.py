@@ -29,8 +29,11 @@ from rb.api.utils import (
 )
 import typer
 from rb_audio_transcription.model import AudioTranscriptionModel
-
-logging.basicConfig(level=logging.DEBUG)
+# this here seems to turn on is the log level for the plugin
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    logging.basicConfig(level=logging.INFO)
+else:
+    logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 app = typer.Typer()

@@ -26,8 +26,9 @@ if getattr(sys, 'frozen', False):
 else:
     application_path = op.dirname(this_file)
 
+print("application_path ", application_path)
 templates = Jinja2Templates(
-    directory=os.path.join("..", application_path,  "templates"),
+    directory=os.path.join( application_path, "..",  "templates"),
 )
 
 
