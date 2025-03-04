@@ -157,8 +157,8 @@ def cli_inputs_parser(input_path: str) -> DirInputs:
 
 def cli_params_parser(p: str) -> FileParameters:
     '''
-    Mandatory cli callback
-    three parameters of type ; string/text , floar , int
+    Mandatory cli callback 
+    three parameters of type: string/text , float , int
     '''
     try:
         params = string_to_dict(p)
