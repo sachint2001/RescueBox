@@ -1,8 +1,6 @@
-import contextlib
 import io
 import sys
 from io import StringIO
-from typing import Callable, Generator
 
 
 class Capturing(list):
@@ -19,7 +17,6 @@ class Capturing(list):
 
 def capture_stdout_as_generator(func, *args, **kwargs):
     import sys
-    import io
 
     old_stdout = sys.stdout
     sys.stdout = buffer = io.StringIO()

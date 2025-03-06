@@ -1,5 +1,6 @@
-from typing import Any, Callable
 import argparse
+from typing import Any, Callable
+
 from rb.api.models import FloatRangeDescriptor, IntRangeDescriptor
 
 
@@ -7,7 +8,7 @@ def get_int_range_check_func_arg_parser(range: IntRangeDescriptor) -> Callable[[
     def check_func(value: Any) -> int:
         try:
             value = int(value)
-        except:
+        except Exception:
             raise argparse.ArgumentTypeError(f"{value} is not a valid integer")
         if value < range.min or value > range.max:
             raise argparse.ArgumentTypeError(f"{value} is not in the range [{range.min}, {range.max}]")
@@ -18,7 +19,7 @@ def get_float_range_check_func_arg_parser(range: FloatRangeDescriptor) -> Callab
     def check_func(value: Any) -> float:
         try:
             value = float(value)
-        except:
+        except Exception:
             raise argparse.ArgumentTypeError(f"{value} is not a valid float")
         if value < range.min or value > range.max:
             raise argparse.ArgumentTypeError(f"{value} is not in the range [{range.min}, {range.max}]")

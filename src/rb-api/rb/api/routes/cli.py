@@ -157,7 +157,7 @@ for plugin in rescuebox_app.registered_groups:
             )
             # FIXME: prefix /api to make desktop call happy for now , eventually this will go away
             # GOAL : /audio/routes is valid /api/routes should no longer work
-            cli_to_api_router.include_router(router,prefix=f'/api', tags=[plugin.name])
+            cli_to_api_router.include_router(router,prefix='/api', tags=[plugin.name])
 
             logger.debug(f"Registering FastAPI route for {plugin.name} desktop call: {command.callback.__name__}")
         else:

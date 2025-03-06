@@ -1,9 +1,6 @@
-from logging.config import dictConfig
 import multiprocessing
 import os
-import logging
 import sys
-from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from rb.api import routes
