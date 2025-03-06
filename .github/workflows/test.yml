@@ -1,12 +1,12 @@
 name: Pytest
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   build:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,4 +18,3 @@ jobs:
           pip install poetry
           poetry install --with api --with dev 
           poetry run pytest
-          
