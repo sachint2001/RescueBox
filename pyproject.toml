@@ -28,6 +28,7 @@ rb-doc-parser = { path = "src/rb-doc-parser", develop = true }
 rb-audio-transcription = { path = "src/rb-audio-transcription", develop = true }
 
 # Don't add new packages here, add them appropriately in the list above
+beautifulsoup4 = "^4.13.3"
 
 
 
