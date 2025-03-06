@@ -24,19 +24,19 @@ r'''
 def test_routes_command():
     ''' call typer cli to get routes'''
     result = runner.invoke(cli_app, [API_ROUTES])
-    assert result is not ""
+    assert result != ""
     assert result.exit_code == 0
 
 
 def test_metadata_command():
     result = runner.invoke(cli_app, [API_APPMETDATA])
-    assert result is not ""
+    assert result != ""
     assert result.exit_code == 0
 
 
 def test_schema_command():
     result = runner.invoke(cli_app, [f"task{PLUGIN_SCHEMA_SUFFIX}"])
-    assert result is not ""
+    assert result != ""
     assert result.exit_code == 0
 
 def test_negative_test():

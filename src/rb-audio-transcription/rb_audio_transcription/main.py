@@ -1,5 +1,5 @@
 """audio transcribe plugin"""
-import sys, os
+import sys
 import json
 import logging
 from pathlib import Path
@@ -8,7 +8,6 @@ from fastapi import Body, Depends, HTTPException, Response
 from rb.api.models import (
     BatchTextResponse,
     DirectoryInput,
-    FileInput,
     FloatParameterDescriptor,
     InputSchema,
     InputType,
@@ -21,7 +20,6 @@ from rb.api.models import (
     TextParameterDescriptor,
     TextResponse,
 )
-from rb.api.models import BatchFileInput
 from rb.api.models import API_APPMETDATA, API_ROUTES, PLUGIN_SCHEMA_SUFFIX
 from rb.api.utils import (
     get_int_range_check_func_arg_parser,
@@ -190,7 +188,7 @@ def alternate_params_parser(p: str) -> ParameterSchema:
     # this fucntion is not used , just an example
     try:
         params = string_to_dict(p)
-        logger.info(f"-----DEBUG parser ---")
+        logger.info("-----DEBUG parser ---")
         range_object = IntRangeDescriptor(min=params["c"], max=params["d"])
         func = get_int_range_check_func_arg_parser(range_object)
         if func(params["e"]):
@@ -221,7 +219,7 @@ def validate_inputs(inputs: DirInputs):
         files = [file for file in dirpath.iterdir() if file.is_file()]
         logger.debug(files)
         if len(files) < 1:
-            raise HTTPException(status_code=400, detail=f"no 'files_in given directory' for transcribe command")
+            raise HTTPException(status_code=400, detail="no 'files_in given directory' for transcribe command")
         logger.debug("------validate inputs done ---")
         ## this return object is now ready for use in transcribe function
         return inputs
@@ -229,7 +227,7 @@ def validate_inputs(inputs: DirInputs):
         logger.error("validate bad inputs: %s", e)
         raise HTTPException(status_code=400, detail=f"Invalid path inputs for transcribe command: {e}")
     
-@app.command(f'transcribe')
+@app.command('transcribe')
 def transcribe(
     inputs: Annotated[
         DirInputs,
