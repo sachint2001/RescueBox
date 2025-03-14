@@ -1,32 +1,22 @@
 """audio transcribe plugin"""
-import sys
 import json
 import logging
+import sys
 from pathlib import Path
 from typing import Annotated, Any, TypedDict
-from fastapi import Body, Depends, HTTPException, Response
-from rb.api.models import (
-    BatchTextResponse,
-    DirectoryInput,
-    FloatParameterDescriptor,
-    InputSchema,
-    InputType,
-    IntParameterDescriptor,
-    IntRangeDescriptor,
-    ParameterSchema,
-    RangedIntParameterDescriptor,
-    ResponseBody,
-    TaskSchema,
-    TextParameterDescriptor,
-    TextResponse,
-)
-from rb.api.models import API_APPMETDATA, API_ROUTES, PLUGIN_SCHEMA_SUFFIX
-from rb.api.utils import (
-    get_int_range_check_func_arg_parser,
-    string_to_dict,
-)
+
 import typer
+from fastapi import Body, Depends, HTTPException, Response
+from rb.api.models import (API_APPMETDATA, API_ROUTES, PLUGIN_SCHEMA_SUFFIX,
+                           BatchTextResponse, DirectoryInput,
+                           FloatParameterDescriptor, InputSchema, InputType,
+                           IntParameterDescriptor, IntRangeDescriptor,
+                           ParameterSchema, RangedIntParameterDescriptor,
+                           ResponseBody, TaskSchema, TextParameterDescriptor,
+                           TextResponse)
+from rb.api.utils import get_int_range_check_func_arg_parser, string_to_dict
 from rb_audio_transcription.model import AudioTranscriptionModel
+
 # this here seems to turn on is the log level for the plugin
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
     logging.basicConfig(level=logging.INFO)
@@ -130,14 +120,6 @@ class DirInputs(TypedDict):
     dir_input: DirectoryInput
 
 
-class FileParameters(TypedDict):
-    """model input parameters to transcribe"""
-
-    example_parameter: str
-    example_parameter2: float
-    example_parameter3: int
-
-
 def cli_inputs_parser(input_path: str) -> DirInputs:
     '''
     Mandatory cli callback
@@ -153,58 +135,6 @@ def cli_inputs_parser(input_path: str) -> DirInputs:
         logger.error(e)
         raise typer.Abort()
 
-def cli_params_parser(p: str) -> FileParameters:
-    '''
-    Mandatory cli callback 
-    three parameters of type: string/text , float , int
-    '''
-    try:
-        params = string_to_dict(p)
-        logger.debug("-----DEBUG FileParameters parser %s ---", params)
-        return [
-            ParameterSchema(
-                key="example_parameter",
-                label="string param",
-                value=TextParameterDescriptor(default=params["e1"]),
-            ),
-            ParameterSchema(
-                key="example_parameter2",
-                label="float param",
-                value=FloatParameterDescriptor(default=params["e2"]),
-            ),
-            ParameterSchema(
-                key="example_parameter3",
-                label="int param",
-                value=IntParameterDescriptor(default=params["e3"]),
-            ),
-        ]
-    except (json.JSONDecodeError, ValueError, TypeError) as e:
-        logger.error("Invalid parameter input for transcribe: %s", e)
-        raise typer.Abort()
-
-
-def alternate_params_parser(p: str) -> ParameterSchema:
-    # range of int values key: str, label: str, minx: int, maxx:int, val:int
-    # this fucntion is not used , just an example
-    try:
-        params = string_to_dict(p)
-        logger.info("-----DEBUG parser ---")
-        range_object = IntRangeDescriptor(min=params["c"], max=params["d"])
-        func = get_int_range_check_func_arg_parser(range_object)
-        if func(params["e"]):
-            return [
-                ParameterSchema(
-                    key=params["a"],
-                    label=params["b"],
-                    value=RangedIntParameterDescriptor(
-                        range=IntRangeDescriptor(min=params["c"], max=params["d"]),
-                        default=params["e"],
-                    ),
-                )
-            ]
-    except (json.JSONDecodeError, ValueError, TypeError) as e:
-        logger.error("Invalid data format: %d", e)
-        raise typer.Abort()
 
 def validate_inputs(inputs: DirInputs):
     '''
