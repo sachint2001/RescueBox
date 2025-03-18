@@ -1,28 +1,23 @@
 import inspect
-import time
 import json
 import logging
+import time
 from typing import Callable, Generator, Optional
-from pydantic import BaseModel
+
 import typer
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from makefun import with_signature
+from pydantic import BaseModel
+from rb.api.models import (API_APPMETDATA, API_ROUTES, PLUGIN_SCHEMA_SUFFIX,
+                           BatchDirectoryResponse, BatchFileResponse,
+                           BatchTextResponse, DirectoryResponse, FileResponse,
+                           MarkdownResponse, ResponseBody, TextResponse)
 from rb.lib.stdout import Capturing  # type: ignore
 from rb.lib.stdout import capture_stdout_as_generator
-from rb.api.models import (
-    ResponseBody,
-    FileResponse,
-    DirectoryResponse,
-    MarkdownResponse,
-    TextResponse,
-    BatchFileResponse,
-    BatchTextResponse,
-    BatchDirectoryResponse,
-)
-from rb.api.models import API_APPMETDATA, API_ROUTES, PLUGIN_SCHEMA_SUFFIX
+
 from rescuebox.main import app as rescuebox_app
-#os.environ['PYTHONASYNCIODEBUG'] = '0'
+
 logger = logging.getLogger(__name__)
 
 cli_to_api_router = APIRouter()

@@ -1,66 +1,65 @@
 // React imports
-import { useState, useEffect } from "react";
-import "@mantine/core/styles.css";
 import {
-  MantineProvider,
+  Anchor,
   Box,
+  Button,
+  Checkbox,
+  Grid,
+  Group,
+  Input,
+  MantineProvider,
   Stack,
   Text,
-  Anchor,
-  Grid,
-  Button,
   Textarea,
-  Input,
-  Checkbox,
-  Group,
 } from "@mantine/core";
+import "@mantine/core/styles.css";
 import { useForm } from "@mantine/form";
+import { useEffect, useState } from "react";
 
 // Import CSS
 import "./App.css";
 
 // Recursive component to render each group and command
-const TreeNode = ({ node, level = 0, onCommandClick }) => {
-  return (
-    <Box pl={level * 16} className={level > 0 ? "tree-indent" : ""}>
-      {node.is_group ? (
-        <>
-          <Text className="tree-group" mt={4} mb={4}>
-            {node.name}
-          </Text>
-          <Stack spacing={0} gap="xs">
-            {node.children.map((child, index) => (
-              <TreeNode
-                key={index}
-                node={child}
-                level={level + 1}
-                onCommandClick={onCommandClick}
-              />
-            ))}
-          </Stack>
-        </>
-      ) : (
-        <Anchor
-          href="#"
-          className="tree-command"
-          onClick={() => onCommandClick(node)}
-        >
-          <Text mt={2} mb={2}>
-            {node.name}
-          </Text>
-        </Anchor>
-      )}
-    </Box>
-  );
-};
+const TreeNode = ({ node, level = 0, onCommandClick }) => (
+  <Box pl={level * 16} className={level > 0 ? "tree-indent" : ""}>
+    {node.is_group ? (
+      <>
+        <Text className="tree-group" mt={4} mb={4}>
+          {node.name}
+        </Text>
+        <Stack spacing={0} gap="xs">
+          {node.children.map((child, index) => (
+            <TreeNode
+              key={index}
+              node={child}
+              level={level + 1}
+              onCommandClick={onCommandClick}
+            />
+          ))}
+        </Stack>
+      </>
+    ) : (
+      <Anchor
+        href="#"
+        className="tree-command"
+        onClick={(e) => {
+          e.preventDefault();
+          onCommandClick(node);
+        }}
+      >
+        <Text mt={2} mb={2}>
+          {node.name}
+        </Text>
+      </Anchor>
+    )}
+  </Box>
+);
 
-const TreeView = ({ tree, onCommandClick }) => {
-  return (
-    <Box className="tree-view-container">
-      <TreeNode node={tree} onCommandClick={onCommandClick} />
-    </Box>
-  );
-};
+const TreeView = ({ tree, onCommandClick }) => (
+  <Box className="tree-view-container">
+    <TreeNode node={tree} onCommandClick={onCommandClick} />
+  </Box>
+);
 
 // Main component
 const App = () => {
@@ -69,16 +68,18 @@ const App = () => {
   const [commandOutput, setCommandOutput] = useState("");
 
   useEffect(() => {
-    // Retrieve JSON data from the script tag
-    setTree(JSON.parse(document.getElementById("tree").textContent));
+    const treeElement = document.getElementById("tree");
+    if (treeElement) {
+      setTree(JSON.parse(treeElement.textContent));
+    }
   }, []);
 
   const handleCommandClick = (command) => {
     setSelectedCommand(command);
-    setCommandOutput(""); // Clear output when selecting a new command
+    setCommandOutput("");
   };
 
-  // Initialize form with dynamic initial values based on the selected command
+  // Initialize form
   const form = useForm({
     initialValues: selectedCommand
       ? selectedCommand.inputs.reduce((values, input) => {
@@ -88,48 +89,69 @@ const App = () => {
       : {},
   });
 
-  const handleRunCommand = async () => {
+  const handleRunCommand = async (event) => {
+    event.preventDefault(); // Prevent default form submission
+
     if (!selectedCommand) return;
 
-    const inputs = { ...form.values, streaming: true };
-    const queryString = new URLSearchParams(inputs).toString();
-    const url = `${selectedCommand.endpoint}?${queryString}`;
+    let inputs = { ...form.values };
 
-    // Reset command output before starting
-    setCommandOutput("");
+    // Exclude `streaming=true` for non-streaming routes
+    const isStreamingAllowed =
+      !selectedCommand.endpoint.includes("/routes") &&
+      !selectedCommand.endpoint.includes("/app_metadata");
+
+    if (isStreamingAllowed) {
+      inputs.streaming = true;
+    }
+
+    const queryString = new URLSearchParams(inputs).toString();
+
+    const isGetRequest =
+      selectedCommand.endpoint.includes("/routes") ||
+      selectedCommand.endpoint.includes("/app_metadata");
+
+    const url = isGetRequest
+      ? `${selectedCommand.endpoint}?${queryString}`
+      : selectedCommand.endpoint;
+
+    console.log(
+      `🔹 Sending ${isGetRequest ? "GET" : "POST"} request to: ${url}`
+    );
+
+    setCommandOutput(""); // Reset output
 
     try {
       const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        method: isGetRequest ? "GET" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: isGetRequest ? null : JSON.stringify(inputs),
       });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      // Stream output
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let resultText = "";
+      // Handle normal JSON response
+      const rawText = await response.text();
+      console.log("🔹 Raw response from server:", rawText);
 
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        console.log("Received chunk:", chunk); // Debugging log
-
-        resultText += chunk;
-        setCommandOutput((prev) => prev + chunk);
+      let parsedData;
+      try {
+        parsedData = JSON.parse(rawText); // Try parsing as JSON
+      } catch (jsonError) {
+        console.warn("⚠️ Server returned plain text instead of JSON.");
+        parsedData = rawText; // Use raw text if JSON parsing fails
       }
-    } catch (error) {
-      console.error("Transcription failed:", error);
+
       setCommandOutput(
-        `Failed to execute command. Please try again. ${error.message}`
+        typeof parsedData === "object"
+          ? JSON.stringify(parsedData, null, 2) // Pretty-print JSON
+          : parsedData.toString()
       );
+    } catch (error) {
+      console.error("❌ Request failed:", error);
+      setCommandOutput(`❌ Error: ${error.message}`);
     }
   };
 
@@ -174,10 +196,7 @@ const App = () => {
               </Text>
 
               {/* Command Form */}
-              <form
-                onSubmit={form.onSubmit(handleRunCommand)}
-                className="command-form"
-              >
+              <form onSubmit={handleRunCommand} className="command-form">
                 <Stack spacing="xs" mb={12}>
                   {selectedCommand.inputs.map((input) => (
                     <Box key={input.name}>
