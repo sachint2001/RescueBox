@@ -155,8 +155,8 @@ def cli_inputs_parser(input_path: str) -> DirInputs:
 
 def cli_params_parser(p: str) -> FileParameters:
     '''
-    Mandatory cli callback 
-    three parameters of type: string/text , float , int
+    Mandatory cli callback
+    three parameters of type : string/text , float , int
     '''
     try:
         params = string_to_dict(p)
@@ -219,7 +219,7 @@ def validate_inputs(inputs: DirInputs):
         files = [file for file in dirpath.iterdir() if file.is_file()]
         logger.debug(files)
         if len(files) < 1:
-            raise HTTPException(status_code=400, detail="no 'files_in given directory' for transcribe command")
+            raise HTTPException(status_code=400, detail="no files_in given directory for transcribe command")
         logger.debug("------validate inputs done ---")
         ## this return object is now ready for use in transcribe function
         return inputs
