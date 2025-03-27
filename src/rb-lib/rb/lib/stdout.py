@@ -31,7 +31,7 @@ def capture_stdout_as_generator(func, *args, **kwargs):
             if not line:
                 break  # Stop streaming when done
             
-            print(f"🔥 Debug: Captured output -> {line.strip()}")  # Debugging print
+            print(f"Debug: Captured output -> {line.strip()}")  # Debugging print
             yield line.strip()  # Ensure it's yielding non-empty lines
 
     finally:
