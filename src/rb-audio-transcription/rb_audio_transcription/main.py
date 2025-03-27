@@ -9,13 +9,10 @@ from fastapi import Body, Depends, HTTPException
 from rb.api.models import (API_APPMETDATA, API_ROUTES, PLUGIN_SCHEMA_SUFFIX,
                            BatchTextResponse, DirectoryInput, ResponseBody,
                            TextResponse)
+from rb.api.utils import is_running_in_fastapi
 from rb.lib.abstract_parser import AbstractParser
 from rb_audio_transcription.model import AudioTranscriptionModel
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-)
 logger = logging.getLogger(__name__)
 
 app = typer.Typer()
@@ -91,9 +88,6 @@ class AudioTranscriptionParser(AbstractParser):
 
 audio_parser = AudioTranscriptionParser()
 
-def is_running_in_fastapi():
-    """Detect if the app is running inside FastAPI instead of CLI."""
-    return "uvicorn" in sys.modules
 
 @app.command(API_APPMETDATA)
 def app_metadata():
@@ -115,9 +109,6 @@ def routes():
         return data  # Return dict, FastAPI will convert it to JSON automatically
     
     typer.echo(data)  # CLI Mode → Print JSON
-
-
-
 
 
 @app.command('transcribe')

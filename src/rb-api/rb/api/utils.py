@@ -1,4 +1,5 @@
 import argparse
+import sys
 from typing import Any, Callable
 
 from rb.api.models import FloatRangeDescriptor, IntRangeDescriptor
@@ -40,3 +41,7 @@ def string_to_dict(s):
            result[key.strip().replace("'",'')] =value.strip()
         #logger.info(f'string_to_dict {key} {value}')
     return result
+
+def is_running_in_fastapi():
+    """Detect if the app is running inside FastAPI instead of CLI."""
+    return "uvicorn" in sys.modules
