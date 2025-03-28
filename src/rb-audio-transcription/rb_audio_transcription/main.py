@@ -51,7 +51,7 @@ class AudioTranscriptionParser(AbstractParser):
             InputSchema(
                 key="dir_inputs",
                 label="Provide audio files directory",
-                input_type=InputType.BATCHDIRECTORY,
+                input_type=InputType.BATCHFILE,
             )
         ).model_dump(mode="json")
 
