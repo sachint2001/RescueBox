@@ -14,7 +14,13 @@ class AbstractParser(ABC):
     - API routes (automatically registered)
     """
 
-    def __init__(self, name: str, version: str = "1.0.0", author: str = "Unknown", description: str = ""):
+    def __init__(
+        self,
+        name: str,
+        version: str = "1.0.0",
+        author: str = "Unknown",
+        description: str = "",
+    ):
         self.name = name
         self.version = version
         self.author = author

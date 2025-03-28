@@ -21,14 +21,14 @@ ui_router = APIRouter()
 
 this_file = op.abspath(__file__)
 
-if getattr(sys, 'frozen', False):
-    application_path = getattr(sys, '_MEIPASS', op.dirname(sys.executable))
+if getattr(sys, "frozen", False):
+    application_path = getattr(sys, "_MEIPASS", op.dirname(sys.executable))
 else:
     application_path = op.dirname(this_file)
 
 print("application_path ", application_path)
 templates = Jinja2Templates(
-    directory=os.path.join( application_path, "..",  "templates"),
+    directory=os.path.join(application_path, "..", "templates"),
 )
 
 

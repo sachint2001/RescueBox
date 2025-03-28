@@ -9,29 +9,36 @@ from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, DirectoryPath, Field, FilePath, RootModel
 
-API_APPMETDATA="app_metadata"
-API_ROUTES="routes"
-PLUGIN_SCHEMA_SUFFIX="_schema"
+API_APPMETDATA = "app_metadata"
+API_ROUTES = "routes"
+PLUGIN_SCHEMA_SUFFIX = "_schema"
+
 
 class AppMetadata(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    info: Annotated[str, Field(description='Markdown content to render on the info page')]
+    info: Annotated[
+        str, Field(description="Markdown content to render on the info page")
+    ]
     author: str
     version: str
-    name: Annotated[str, Field(examples=['Face Match App'])]
+    name: Annotated[str, Field(examples=["Face Match App"])]
 
 
 class SchemaAPIRoute(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    task_schema: Annotated[str, Field(examples=['/tasks/{name_of_task}/task_schema'])]
-    run_task: Annotated[str, Field(examples=['/tasks/{name_of_task}'])]
-    payload_schema: Annotated[str, Field(examples=['/tasks/{name_of_task}/payload_schema'])]
-    sample_payload: Annotated[str, Field(examples=['/tasks/{name_of_task}/sample_payload'])]
-    short_title: Annotated[str, Field(examples=['{A short title for the task}'])]
+    task_schema: Annotated[str, Field(examples=["/tasks/{name_of_task}/task_schema"])]
+    run_task: Annotated[str, Field(examples=["/tasks/{name_of_task}"])]
+    payload_schema: Annotated[
+        str, Field(examples=["/tasks/{name_of_task}/payload_schema"])
+    ]
+    sample_payload: Annotated[
+        str, Field(examples=["/tasks/{name_of_task}/sample_payload"])
+    ]
+    short_title: Annotated[str, Field(examples=["{A short title for the task}"])]
     order: Annotated[int, Field(examples=[1])]
 
 
@@ -39,9 +46,13 @@ class NoSchemaAPIRoute(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    run_task: Annotated[str, Field(examples=['/tasks/{name_of_task}'])]
-    payload_schema: Annotated[Optional[str], Field(examples=['/tasks/{name_of_task}/payload_schema'])] = None
-    sample_payload: Annotated[Optional[str], Field(examples=['/tasks/{name_of_task}/sample_payload'])] = None
+    run_task: Annotated[str, Field(examples=["/tasks/{name_of_task}"])]
+    payload_schema: Annotated[
+        Optional[str], Field(examples=["/tasks/{name_of_task}/payload_schema"])
+    ] = None
+    sample_payload: Annotated[
+        Optional[str], Field(examples=["/tasks/{name_of_task}/sample_payload"])
+    ] = None
 
 
 class FileInput(BaseModel):
@@ -87,39 +98,47 @@ class BatchDirectoryInput(BaseModel):
 
 
 class InputType(Enum):
-    FILE = 'file'
-    DIRECTORY = 'directory'
-    TEXT = 'text'
-    TEXTAREA = 'textarea'
-    BATCHFILE = 'batchfile'
-    BATCHTEXT = 'batchtext'
-    BATCHDIRECTORY = 'batchdirectory'
+    FILE = "file"
+    DIRECTORY = "directory"
+    TEXT = "text"
+    TEXTAREA = "textarea"
+    BATCHFILE = "batchfile"
+    BATCHTEXT = "batchtext"
+    BATCHDIRECTORY = "batchdirectory"
 
 
 class NewFileInputType(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    default_name: Annotated[Optional[str], Field(alias='defaultName', examples=['my_file'])] = None
-    default_extension: Annotated[str, Field(alias='defaultExtension', examples=['.db'])]
-    allowed_extensions: Annotated[Union[Literal['*'], List[str]], Field(alias='allowedExtensions')]
-    input_type: Annotated[Optional[Literal['newfile']], Field(alias='inputType')] = 'newfile'
+    default_name: Annotated[
+        Optional[str], Field(alias="defaultName", examples=["my_file"])
+    ] = None
+    default_extension: Annotated[str, Field(alias="defaultExtension", examples=[".db"])]
+    allowed_extensions: Annotated[
+        Union[Literal["*"], List[str]], Field(alias="allowedExtensions")
+    ]
+    input_type: Annotated[Optional[Literal["newfile"]], Field(alias="inputType")] = (
+        "newfile"
+    )
 
 
 class ParameterType(Enum):
-    RANGED_FLOAT = 'ranged_float'
-    FLOAT = 'float'
-    ENUM = 'enum'
-    TEXT = 'text'
-    RANGED_INT = 'ranged_int'
-    INT = 'int'
+    RANGED_FLOAT = "ranged_float"
+    FLOAT = "float"
+    ENUM = "enum"
+    TEXT = "text"
+    RANGED_INT = "ranged_int"
+    INT = "int"
 
 
 class FloatParameterDescriptor(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    parameter_type: Annotated[Optional[ParameterType], Field(alias='parameterType')] = ParameterType.FLOAT
+    parameter_type: Annotated[Optional[ParameterType], Field(alias="parameterType")] = (
+        ParameterType.FLOAT
+    )
     default: float
 
 
@@ -135,9 +154,11 @@ class EnumParameterDescriptor(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    parameter_type: Annotated[Optional[ParameterType], Field(alias='parameterType')] = ParameterType.ENUM
-    enum_vals: Annotated[List[EnumVal], Field(alias='enumVals')]
-    message_when_empty: Annotated[Optional[str], Field(alias='messageWhenEmpty')] = None
+    parameter_type: Annotated[Optional[ParameterType], Field(alias="parameterType")] = (
+        ParameterType.ENUM
+    )
+    enum_vals: Annotated[List[EnumVal], Field(alias="enumVals")]
+    message_when_empty: Annotated[Optional[str], Field(alias="messageWhenEmpty")] = None
     default: str
 
 
@@ -145,7 +166,9 @@ class TextParameterDescriptor(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    parameter_type: Annotated[Optional[ParameterType], Field(alias='parameterType')] = ParameterType.TEXT
+    parameter_type: Annotated[Optional[ParameterType], Field(alias="parameterType")] = (
+        ParameterType.TEXT
+    )
     default: str
 
 
@@ -153,7 +176,9 @@ class IntParameterDescriptor(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    parameter_type: Annotated[Optional[ParameterType], Field(alias='parameterType')] = ParameterType.INT
+    parameter_type: Annotated[Optional[ParameterType], Field(alias="parameterType")] = (
+        ParameterType.INT
+    )
     default: int
 
 
@@ -174,20 +199,20 @@ class FloatRangeDescriptor(BaseModel):
 
 
 class FileType(Enum):
-    IMG = 'img'
-    CSV = 'csv'
-    JSON = 'json'
-    TEXT = 'text'
-    AUDIO = 'audio'
-    VIDEO = 'video'
-    MARKDOWN = 'markdown'
+    IMG = "img"
+    CSV = "csv"
+    JSON = "json"
+    TEXT = "text"
+    AUDIO = "audio"
+    VIDEO = "video"
+    MARKDOWN = "markdown"
 
 
 class FileResponse(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    output_type: Optional[Literal['file']] = 'file'
+    output_type: Optional[Literal["file"]] = "file"
     file_type: FileType
     path: str
     title: Optional[str] = None
@@ -198,7 +223,7 @@ class DirectoryResponse(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    output_type: Optional[Literal['directory']] = 'directory'
+    output_type: Optional[Literal["directory"]] = "directory"
     path: str
     title: str
     subtitle: Optional[str] = None
@@ -208,7 +233,7 @@ class MarkdownResponse(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    output_type: Optional[Literal['markdown']] = 'markdown'
+    output_type: Optional[Literal["markdown"]] = "markdown"
     value: str
     title: Optional[str] = None
     subtitle: Optional[str] = None
@@ -218,7 +243,7 @@ class TextResponse(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    output_type: Optional[Literal['text']] = 'text'
+    output_type: Optional[Literal["text"]] = "text"
     value: str
     title: Optional[str] = None
     subtitle: Optional[str] = None
@@ -228,7 +253,7 @@ class BatchFileResponse(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    output_type: Optional[Literal['batchfile']] = 'batchfile'
+    output_type: Optional[Literal["batchfile"]] = "batchfile"
     files: List[FileResponse]
 
 
@@ -236,7 +261,7 @@ class BatchTextResponse(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    output_type: Optional[Literal['batchtext']] = 'batchtext'
+    output_type: Optional[Literal["batchtext"]] = "batchtext"
     texts: List[TextResponse]
 
 
@@ -244,7 +269,7 @@ class BatchDirectoryResponse(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    output_type: Optional[Literal['batchdirectory']] = 'batchdirectory'
+    output_type: Optional[Literal["batchdirectory"]] = "batchdirectory"
     directories: List[DirectoryResponse]
 
 
@@ -257,13 +282,27 @@ class APIRoutes(RootModel[List[Union[SchemaAPIRoute, NoSchemaAPIRoute]]]):
 
 class Input(
     RootModel[
-        Union[FileInput, DirectoryInput, TextInput, BatchFileInput, BatchTextInput, BatchDirectoryInput]
+        Union[
+            FileInput,
+            DirectoryInput,
+            TextInput,
+            BatchFileInput,
+            BatchTextInput,
+            BatchDirectoryInput,
+        ]
     ]
 ):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    root: Union[FileInput, DirectoryInput, TextInput, BatchFileInput, BatchTextInput, BatchDirectoryInput]
+    root: Union[
+        FileInput,
+        DirectoryInput,
+        TextInput,
+        BatchFileInput,
+        BatchTextInput,
+        BatchDirectoryInput,
+    ]
 
 
 class InputSchema(BaseModel):
@@ -272,15 +311,15 @@ class InputSchema(BaseModel):
     )
     key: str
     label: str
-    subtitle: Optional[str] = ''
-    input_type: Annotated[Union[InputType, NewFileInputType], Field(alias='inputType')]
+    subtitle: Optional[str] = ""
+    input_type: Annotated[Union[InputType, NewFileInputType], Field(alias="inputType")]
 
 
 class RangedFloatParameterDescriptor(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    parameter_type: Annotated[Optional[ParameterType], Field(alias='parameterType')] = (
+    parameter_type: Annotated[Optional[ParameterType], Field(alias="parameterType")] = (
         ParameterType.RANGED_FLOAT
     )
     range: FloatRangeDescriptor
@@ -291,7 +330,7 @@ class RangedIntParameterDescriptor(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    parameter_type: Annotated[Optional[ParameterType], Field(alias='parameterType')] = (
+    parameter_type: Annotated[Optional[ParameterType], Field(alias="parameterType")] = (
         ParameterType.RANGED_INT
     )
     range: IntRangeDescriptor
@@ -339,7 +378,7 @@ class ParameterSchema(BaseModel):
     )
     key: str
     label: str
-    subtitle: Optional[str] = ''
+    subtitle: Optional[str] = ""
     value: Union[
         RangedFloatParameterDescriptor,
         FloatParameterDescriptor,

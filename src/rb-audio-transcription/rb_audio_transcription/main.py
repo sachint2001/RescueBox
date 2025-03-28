@@ -1,13 +1,22 @@
 """audio transcribe plugin"""
+
 import logging
 from pathlib import Path
 from typing import Annotated, Any, Dict, List
 
 import typer
 from fastapi import Body, Depends, HTTPException
-from rb.api.models import (API_APPMETDATA, API_ROUTES, PLUGIN_SCHEMA_SUFFIX,
-                           BatchTextResponse, DirectoryInput, InputSchema,
-                           InputType, ResponseBody, TextResponse)
+from rb.api.models import (
+    API_APPMETDATA,
+    API_ROUTES,
+    PLUGIN_SCHEMA_SUFFIX,
+    BatchTextResponse,
+    DirectoryInput,
+    InputSchema,
+    InputType,
+    ResponseBody,
+    TextResponse,
+)
 from rb.lib.abstract_parser import AbstractParser
 from rb_audio_transcription.model import AudioTranscriptionModel
 
@@ -38,16 +47,16 @@ class AudioTranscriptionParser(AbstractParser):
         """Defines the available API routes for this parser."""
         return [
             {
-                "task_schema": f'/audio/task{PLUGIN_SCHEMA_SUFFIX}',
+                "task_schema": f"/audio/task{PLUGIN_SCHEMA_SUFFIX}",
                 "run_task": "/audio/transcribe",
                 "short_title": "audio transcribe",
                 "order": 0,
             }
         ]
-    
+
     @property
     def task_schema(self) -> Dict[str, Any]:
-        return (            
+        return (
             InputSchema(
                 key="dir_inputs",
                 label="Provide audio files directory",
@@ -74,13 +83,18 @@ class AudioTranscriptionParser(AbstractParser):
             files = [file for file in dirpath.iterdir() if file.is_file()]
 
             if len(files) < 1:
-                raise HTTPException(status_code=400, detail="No files in given directory for transcription.")
+                raise HTTPException(
+                    status_code=400,
+                    detail="No files in given directory for transcription.",
+                )
 
             logger.debug("Validation successful.")
             return inputs
         except Exception as e:
             logger.error(f"Invalid path inputs: {e}")
-            raise HTTPException(status_code=400, detail=f"Invalid path inputs for transcription: {e}")
+            raise HTTPException(
+                status_code=400, detail=f"Invalid path inputs for transcription: {e}"
+            )
 
     def cli_parser(self, path: str):
         """
@@ -100,7 +114,7 @@ audio_parser = AudioTranscriptionParser()
 @app.command(API_APPMETDATA)
 def app_metadata():
     """Return metadata for the current parser."""
-    data = audio_parser.metadata or {}  
+    data = audio_parser.metadata or {}
     print(data)
     return data
 
@@ -112,19 +126,21 @@ def routes():
     print(data)  # CLI Mode → Print JSON
     return data
 
+
 @app.command(f"task{PLUGIN_SCHEMA_SUFFIX}")
 def task_schema():
     schema = audio_parser.task_schema
     print(schema)
     return schema
 
-@app.command('transcribe')
+
+@app.command("transcribe")
 def transcribe(
     inputs: Annotated[
         DirectoryInput,
         typer.Argument(parser=audio_parser.cli_parser, help="Input directory path"),
         Body(embed=True),
-        Depends(audio_parser.validate_inputs)
+        Depends(audio_parser.validate_inputs),
     ]
 ) -> ResponseBody:
     """Transcribe audio files"""
