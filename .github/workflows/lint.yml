@@ -17,7 +17,7 @@ jobs:
 
       - name: Install linters
         run: |
-          pip install ruff black
+          pip install ruff black==24.10.0
 
       - name: Run ruff (linter)
         run: |
@@ -25,4 +25,5 @@ jobs:
 
       - name: Run black (code format check)
         run: |
+          black --version
           black --check .
