@@ -3,6 +3,7 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 from rb.api.main import app as api_app
 from rb.api.models import API_APPMETDATA, API_ROUTES, PLUGIN_SCHEMA_SUFFIX, ResponseBody
+from rb_audio_transcription.main import AudioTranscriptionParser
 from rb_audio_transcription.main import app as cli_app
 from typer.testing import CliRunner
 
@@ -52,8 +53,13 @@ def test_api_transcribe_command():
 def test_client_routes():
     response = client.get("/audio/routes")
     assert response.status_code == 200
-    assert isinstance(response.json(), list)
-    assert any("run_task" in route for route in response.json())
+
+    expected_routes = AudioTranscriptionParser().routes
+    actual_routes = response.json()
+
+    assert (
+        actual_routes == expected_routes
+    ), f"Mismatch in /audio/routes:\nExpected: {expected_routes}\nGot: {actual_routes}"
 
 
 def test_client_metadata():
