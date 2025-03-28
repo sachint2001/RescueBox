@@ -1,28 +1,32 @@
 import inspect
-import time
 import json
 import logging
+import time
 from typing import Callable, Generator, Optional
-from pydantic import BaseModel
+
 import typer
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from makefun import with_signature
-from rb.lib.stdout import Capturing  # type: ignore
-from rb.lib.stdout import capture_stdout_as_generator
+from pydantic import BaseModel
 from rb.api.models import (
-    ResponseBody,
-    FileResponse,
-    DirectoryResponse,
-    MarkdownResponse,
-    TextResponse,
+    API_APPMETDATA,
+    API_ROUTES,
+    PLUGIN_SCHEMA_SUFFIX,
+    BatchDirectoryResponse,
     BatchFileResponse,
     BatchTextResponse,
-    BatchDirectoryResponse,
+    DirectoryResponse,
+    FileResponse,
+    MarkdownResponse,
+    ResponseBody,
+    TextResponse,
 )
-from rb.api.models import API_APPMETDATA, API_ROUTES, PLUGIN_SCHEMA_SUFFIX
+from rb.lib.stdout import Capturing  # type: ignore
+from rb.lib.stdout import capture_stdout_as_generator
+
 from rescuebox.main import app as rescuebox_app
-#os.environ['PYTHONASYNCIODEBUG'] = '0'
+
 logger = logging.getLogger(__name__)
 
 cli_to_api_router = APIRouter()
@@ -32,26 +36,38 @@ def static_endpoint(callback: Callable, *args, **kwargs) -> ResponseBody:
     """Execute a CLI command and return the result synchronously"""
     with Capturing() as stdout:
         try:
-            logger.debug(f"Executing CLI command: {callback.__name__} with args={args}, kwargs={kwargs}")
-            result = callback(*args, **kwargs)  # Ensure this returns a valid Pydantic model
+            logger.debug(
+                f"Executing CLI command: {callback.__name__} with args={args}, kwargs={kwargs}"
+            )
+            result = callback(
+                *args, **kwargs
+            )  # Ensure this returns a valid Pydantic model
 
             logger.debug(f"CLI command output type: {type(result)}")
 
             if isinstance(result, ResponseBody):  # Ensure it's a valid Pydantic model
                 return result
-            if isinstance(result, BaseModel):  # Ensure it's a valid Pydantic model , not sure if this is needed for desktop calls
+            if isinstance(
+                result, BaseModel
+            ):  # Ensure it's a valid Pydantic model , not sure if this is needed for desktop calls
                 return ResponseBody(root=result)
-            if isinstance(result, dict):  # or Ensure it's a valid dict model for desktop app metadata call to work
+            if isinstance(
+                result, dict
+            ):  # or Ensure it's a valid dict model for desktop app metadata call to work
                 return result
-            if isinstance(result, list):  # or Ensure it's a valid str model for routes call
+            if isinstance(
+                result, list
+            ):  # or Ensure it's a valid str model for routes call
                 return result
-            if isinstance(result, str):  # or Ensure it's a valid str model for routes call
+            if isinstance(
+                result, str
+            ):  # or Ensure it's a valid str model for routes call
                 return ResponseBody(root=TextResponse(value=result))
             # this has an issue of nor sending back details to desktop ui the api caller ?
             raise ValueError(f"Invalid return type from Typer command: {type(result)}")
         except Exception as e:
             logger.error("Error executing CLI command: %s", e)
-            raise HTTPException( # pylint: disable=raise-missing-from
+            raise HTTPException(  # pylint: disable=raise-missing-from
                 status_code=400,
                 detail={"error": f"Typer CLI aborted {e}", "stdout": stdout[-10:]},
             )
@@ -60,12 +76,18 @@ def static_endpoint(callback: Callable, *args, **kwargs) -> ResponseBody:
 def streaming_endpoint(callback: Callable, *args, **kwargs) -> Generator:
     """Execute a CLI command and stream the results with proper response handling"""
 
-    logger.debug(f"🚀Streaming started for command: {callback.__name__} with args={args}, kwargs={kwargs}")
+    logger.debug(
+        f"🚀Streaming started for command: {callback.__name__} with args={args}, kwargs={kwargs}"
+    )
 
     for line in capture_stdout_as_generator(callback, *args, **kwargs):
         try:
             # Attempt to parse the output if it's JSON-like
-            parsed_line = json.loads(line) if isinstance(line, str) and line.lstrip().startswith("{") else line
+            parsed_line = (
+                json.loads(line)
+                if isinstance(line, str) and line.lstrip().startswith("{")
+                else line
+            )
 
             response_body = None
 
@@ -76,18 +98,30 @@ def streaming_endpoint(callback: Callable, *args, **kwargs) -> Generator:
                 elif "files" in parsed_line:  # Matches BatchFileResponse structure
                     response_body = ResponseBody(root=BatchFileResponse(**parsed_line))
                 elif "directories" in parsed_line:  # Matches BatchDirectoryResponse
-                    response_body = ResponseBody(root=BatchDirectoryResponse(**parsed_line))
+                    response_body = ResponseBody(
+                        root=BatchDirectoryResponse(**parsed_line)
+                    )
                 elif "path" in parsed_line:  # Matches FileResponse or DirectoryResponse
                     response_body = ResponseBody(
-                        root=DirectoryResponse(**parsed_line) if parsed_line.get("is_directory") else FileResponse(**parsed_line)
+                        root=(
+                            DirectoryResponse(**parsed_line)
+                            if parsed_line.get("is_directory")
+                            else FileResponse(**parsed_line)
+                        )
                     )
                 elif "markdown" in parsed_line:  # Matches MarkdownResponse
                     response_body = ResponseBody(root=MarkdownResponse(**parsed_line))
                 else:
-                    response_body = ResponseBody(root=TextResponse(value=str(parsed_line)))
+                    response_body = ResponseBody(
+                        root=TextResponse(value=str(parsed_line))
+                    )
 
             elif isinstance(parsed_line, list):
-                response_body = ResponseBody(root=BatchTextResponse(texts=[TextResponse(value=str(item)) for item in parsed_line]))
+                response_body = ResponseBody(
+                    root=BatchTextResponse(
+                        texts=[TextResponse(value=str(item)) for item in parsed_line]
+                    )
+                )
 
             else:
                 # Default to TextResponse if it's a simple string
@@ -99,7 +133,9 @@ def streaming_endpoint(callback: Callable, *args, **kwargs) -> Generator:
 
         except Exception as e:
             logger.error(f"Error processing streaming output: {e}")
-            yield ResponseBody(root=TextResponse(value=f"Error: {str(e)}")).model_dump_json()
+            yield ResponseBody(
+                root=TextResponse(value=f"Error: {str(e)}")
+            ).model_dump_json()
 
         time.sleep(0.01)
 
@@ -122,14 +158,16 @@ def command_callback(command: typer.models.CommandInfo):
 
     @with_signature(new_signature)
     def wrapper(*args, **kwargs) -> ResponseBody:
-        logger.debug(f"FastAPI wrapper called for {command.callback.__name__} with args={args}, kwargs={kwargs}")
+        logger.debug(
+            f"FastAPI wrapper called for {command.callback.__name__} with args={args}, kwargs={kwargs}"
+        )
 
         streaming = kwargs.pop("streaming", False)
         if streaming:
             return StreamingResponse(
                 streaming_endpoint(command.callback, *args, **kwargs)
             )
-            
+
         return static_endpoint(command.callback, *args, **kwargs)
 
     wrapper.__name__ = command.callback.__name__
@@ -143,12 +181,13 @@ for plugin in rescuebox_app.registered_groups:
     router = APIRouter()
 
     for command in plugin.typer_instance.registered_commands:
-        
 
-        if command.name and (command.name == API_APPMETDATA or
-                             command.name == API_ROUTES  or 
-                             command.name.endswith(PLUGIN_SCHEMA_SUFFIX)):
-            logger.debug(f'plugin command name is {command.name}')
+        if command.name and (
+            command.name == API_APPMETDATA
+            or command.name == API_ROUTES
+            or command.name.endswith(PLUGIN_SCHEMA_SUFFIX)
+        ):
+            logger.debug(f"plugin command name is {command.name}")
             router.add_api_route(
                 f"/{command.callback.__name__}",
                 endpoint=command_callback(command),
@@ -157,9 +196,11 @@ for plugin in rescuebox_app.registered_groups:
             )
             # FIXME: prefix /api to make desktop call happy for now , eventually this will go away
             # GOAL : /audio/routes is valid /api/routes should no longer work
-            cli_to_api_router.include_router(router,prefix='/api', tags=[plugin.name])
+            cli_to_api_router.include_router(router, prefix="/api", tags=[plugin.name])
 
-            logger.debug(f"Registering FastAPI route for {plugin.name} desktop call: {command.callback.__name__}")
+            logger.debug(
+                f"Registering FastAPI route for {plugin.name} desktop call: {command.callback.__name__}"
+            )
         else:
             router.add_api_route(
                 f"/{command.callback.__name__}",
@@ -168,5 +209,9 @@ for plugin in rescuebox_app.registered_groups:
                 name=command.callback.__name__,
                 response_model=ResponseBody,
             )
-            logger.debug(f"Registering FastAPI route for {plugin.name} command: {command.callback.__name__}")
-            cli_to_api_router.include_router(router, prefix=f"/{plugin.name}", tags=[plugin.name])
+            logger.debug(
+                f"Registering FastAPI route for {plugin.name} command: {command.callback.__name__}"
+            )
+            cli_to_api_router.include_router(
+                router, prefix=f"/{plugin.name}", tags=[plugin.name]
+            )

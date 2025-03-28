@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 
 BASE_WIKI_URL = "https://github.com/UMass-Rescue/RescueBox/wiki"
 
+
 def get_wiki_page_links():
     """
     Fetches all subpage links from the GitHub Wiki main page.
@@ -18,7 +19,9 @@ def get_wiki_page_links():
 
         # Extract the full URLs of each wiki page
         page_urls = [
-            BASE_WIKI_URL + "/" + link["href"].split("/")[-1]  # Append page name to base URL
+            BASE_WIKI_URL
+            + "/"
+            + link["href"].split("/")[-1]  # Append page name to base URL
             for link in wiki_links
             if "/RescueBox/wiki/" in link["href"]
         ]
@@ -28,6 +31,7 @@ def get_wiki_page_links():
     except requests.RequestException as e:
         print(f"Error fetching wiki page links: {e}")
         return []
+
 
 def download_wiki_page(url):
     """
@@ -52,6 +56,7 @@ def download_wiki_page(url):
         print(f"Error downloading {url}: {e}")
         return None
 
+
 def download_all_wiki_pages():
     """
     Fetches all wiki pages and extracts their markdown content.
@@ -69,6 +74,6 @@ def download_all_wiki_pages():
 
     return wiki_data
 
+
 # Example Usage
 all_wiki_content = download_all_wiki_pages()
-

@@ -10,5 +10,8 @@ def test_download_all_wiki_pages():
     assert len(wiki_content) > 0, "Failed: No pages found in the wiki"
 
     # Check that at least one page contains expected keywords
-    found_valid_page = any("RescueBox" in content or "UMass" in content for content in wiki_content.values())
+    found_valid_page = any(
+        "RescueBox" in content or "UMass" in content
+        for content in wiki_content.values()
+    )
     assert found_valid_page, "Failed: No retrieved pages contain expected content"
