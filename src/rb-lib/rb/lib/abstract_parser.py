@@ -40,6 +40,15 @@ class AbstractParser(ABC):
         pass
 
     @property
+    @abstractmethod
+    def task_schema(self) -> Dict[str, Any]:
+        """
+        Return a schema dict (used by RescueBox desktop UI).
+        This replaces the `@app.command('task_schema')` handler in the plugin.
+        """
+        pass
+
+    @property
     def metadata(self) -> Dict[str, Any]:
         """Returns the metadata of the parser (configurable)."""
         return {

@@ -6,9 +6,8 @@ from typing import Annotated, Any, Dict, List
 import typer
 from fastapi import Body, Depends, HTTPException
 from rb.api.models import (API_APPMETDATA, API_ROUTES, PLUGIN_SCHEMA_SUFFIX,
-                           BatchTextResponse, DirectoryInput, ResponseBody,
-                           TextResponse)
-from rb.api.utils import is_running_in_fastapi
+                           BatchTextResponse, DirectoryInput, InputSchema,
+                           InputType, ResponseBody, TextResponse)
 from rb.lib.abstract_parser import AbstractParser
 from rb_audio_transcription.model import AudioTranscriptionModel
 
@@ -45,6 +44,16 @@ class AudioTranscriptionParser(AbstractParser):
                 "order": 0,
             }
         ]
+    
+    @property
+    def task_schema(self) -> Dict[str, Any]:
+        return (            
+            InputSchema(
+                key="dir_inputs",
+                label="Provide audio files directory",
+                input_type=InputType.BATCHDIRECTORY,
+            )
+        ).model_dump(mode="json")
 
     @property
     def metadata(self) -> Dict[str, Any]:
@@ -92,23 +101,22 @@ audio_parser = AudioTranscriptionParser()
 def app_metadata():
     """Return metadata for the current parser."""
     data = audio_parser.metadata or {}  
-
-    if is_running_in_fastapi():
-        return data
-    
-    typer.echo(data)
+    print(data)
+    return data
 
 
 @app.command(API_ROUTES)
 def routes():
     """Return routes for the current parser."""
     data = audio_parser.routes or {}  # Prevent returning `None`
+    print(data)  # CLI Mode → Print JSON
+    return data
 
-    if is_running_in_fastapi():
-        return data  # Return dict, FastAPI will convert it to JSON automatically
-    
-    typer.echo(data)  # CLI Mode → Print JSON
-
+@app.command(f"task{PLUGIN_SCHEMA_SUFFIX}")
+def task_schema():
+    schema = audio_parser.task_schema
+    print(schema)
+    return schema
 
 @app.command('transcribe')
 def transcribe(
@@ -121,7 +129,7 @@ def transcribe(
 ) -> ResponseBody:
     """Transcribe audio files"""
 
-    logger.debug("Processing transcription...")
+    print("Processing transcription...")
     dirpath = inputs.path
 
     results = model.transcribe_files_in_directory(dirpath)
@@ -129,7 +137,7 @@ def transcribe(
         TextResponse(value=r["result"], title=r["file_path"]) for r in results
     ]
 
-    logger.info(f"Transcription Results: {result_texts}")
+    print(f"Transcription Results: {results}")
     response = BatchTextResponse(texts=result_texts)
     return ResponseBody(root=response)
 
