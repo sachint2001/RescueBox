@@ -34,7 +34,6 @@ from rb.api.models import (
 )
 
 
-
 def schema_get_sample_payload(schema: TaskSchema) -> RequestBody:
     input_schema = schema.inputs
     parameter_schema = schema.parameters

@@ -56,7 +56,7 @@ def task_schema() -> TaskSchema:
     return TaskSchema(inputs=[input_schema], parameters=[])
 
 
-def transcribe(inputs: AudioInput, parameters: Parameters) -> ResponseBody:
+def transcribe(inputs: AudioInput) -> ResponseBody:
     """Transcribe audio files"""
 
     print("Processing transcription...")
@@ -107,20 +107,10 @@ def cli_parser(path: str):
         raise typer.Abort()
 
 
-def parameter_parser(param):
-    """
-    Parses CLI input parameters into a Pydantic object.
-    """
-    return Parameters()
-
-
 ml_service.add_ml_service(
     rule=f"/transcribe",
     ml_function=transcribe,
     inputs_cli_parser=typer.Argument(parser=cli_parser, help="Input directory path"),
-    parameters_cli_parser=typer.Argument(
-        parser=parameter_parser, help="Dummy parameter"
-    ),
     task_schema_func=task_schema,
     short_title="Transcribe audio files",
     order=0,

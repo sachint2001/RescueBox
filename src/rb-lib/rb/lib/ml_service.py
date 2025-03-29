@@ -102,7 +102,7 @@ class MLService(object):
         rule: str,
         ml_function: Callable[[Any, Any], ResponseBody],
         inputs_cli_parser,
-        parameters_cli_parser,
+        parameters_cli_parser=None,
         task_schema_func: Optional[Callable[[], TaskSchema]] = None,
         short_title: Optional[str] = None,
         order: int = 0,
@@ -126,6 +126,11 @@ class MLService(object):
         type_hints = get_type_hints(ml_function)
         input_type = type_hints["inputs"]
         parameter_type = type_hints.get("parameters", None)
+        if parameter_type and not parameters_cli_parser:
+            raise ValueError(
+                "parameters_cli_parser is required when parameters are used in the function signature."
+            )
+
         validate_inputs = validate_inputs if validate_inputs else lambda x: x
 
         @self.app.command(f"/{self.name}" + endpoint.task_schema_rule)
@@ -160,22 +165,39 @@ class MLService(object):
             f"Registered payload schema command: {endpoint.payload_schema_rule}"
         )
 
-        @self.app.command(f"/{self.name}" + rule)
-        def wrapper(
-            inputs: Annotated[
-                input_type,
-                inputs_cli_parser,
-                Body(embed=True),
-                Depends(validate_inputs),
-            ],
-            parameters: Annotated[
-                parameter_type,
-                parameters_cli_parser,
-                Body(embed=True),
-            ],
-        ):
-            res = ml_function(inputs, parameters)
-            logger.info(res)
-            return res
+        if parameter_type:
+
+            @self.app.command(f"/{self.name}" + rule)
+            def wrapper(
+                inputs: Annotated[
+                    input_type,
+                    inputs_cli_parser,
+                    Body(embed=True),
+                    Depends(validate_inputs),
+                ],
+                parameters: Annotated[
+                    parameter_type,
+                    parameters_cli_parser,
+                    Body(embed=True),
+                ],
+            ):
+                res = ml_function(inputs, parameters)
+                logger.info(res)
+                return res
+
+        else:
+
+            @self.app.command(f"/{self.name}" + rule)
+            def wrapper(
+                inputs: Annotated[
+                    input_type,
+                    inputs_cli_parser,
+                    Body(embed=True),
+                    Depends(validate_inputs),
+                ],
+            ):
+                res = ml_function(inputs)
+                logger.info(res)
+                return res
 
         logger.debug(f"Registered ML service command: {rule}")
