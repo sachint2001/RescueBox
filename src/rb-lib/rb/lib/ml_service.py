@@ -133,7 +133,7 @@ class MLService(object):
 
         validate_inputs = validate_inputs if validate_inputs else lambda x: x
 
-        @self.app.command(f"/{self.name}" + endpoint.task_schema_rule)
+        @self.app.command(endpoint.task_schema_rule)
         def get_task_schema():
             res = endpoint.task_schema_func().model_dump(mode="json")
             logger.info(res)
@@ -141,7 +141,7 @@ class MLService(object):
 
         logger.debug(f"Registered task schema command: {endpoint.task_schema_rule}")
 
-        @self.app.command(f"/{self.name}" + endpoint.sample_payload_rule)
+        @self.app.command(endpoint.sample_payload_rule)
         def get_sample_payload():
             res = schema_get_sample_payload(endpoint.task_schema_func()).model_dump(
                 mode="json"
@@ -153,7 +153,7 @@ class MLService(object):
             f"Registered sample payload command: {endpoint.sample_payload_rule}"
         )
 
-        @self.app.command(f"/{self.name}" + endpoint.payload_schema_rule)
+        @self.app.command(endpoint.payload_schema_rule)
         def get_payload_schema():
             res = schema_get_sample_payload(
                 endpoint.task_schema_func()

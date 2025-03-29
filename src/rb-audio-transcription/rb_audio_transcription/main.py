@@ -24,7 +24,7 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
 
-APP_NAME = "audio_transcription"
+APP_NAME = "audio"
 ml_service = MLService(APP_NAME)
 ml_service.add_app_metadata(
     name="Audio Transcription",

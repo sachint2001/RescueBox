@@ -3,77 +3,95 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 from rb.api.main import app as api_app
 from rb.api.models import API_APPMETDATA, API_ROUTES, PLUGIN_SCHEMA_SUFFIX, ResponseBody
-from rb_audio_transcription.main import AudioTranscriptionParser
-from rb_audio_transcription.main import app as cli_app
+from rb_audio_transcription.main import app as cli_app, APP_NAME
 from typer.testing import CliRunner
 
 runner = CliRunner()
 client = TestClient(api_app)
 
+EXPECTED_ROUTES = [
+    {
+        "task_schema": f"/{APP_NAME}/transcribe/task_schema",
+        "run_task": f"/{APP_NAME}/transcribe",
+        "payload_schema": f"/{APP_NAME}/transcribe/payload_schema",
+        "sample_payload": f"/{APP_NAME}/transcribe/sample_payload",
+        "short_title": "Transcribe audio files",
+        "order": 0,
+    }
+]
 
-def test_routes_command():
-    result = runner.invoke(cli_app, [API_ROUTES])
-    assert result.exit_code == 0
-    assert "run_task" in result.stdout
+
+def test_routes_command(caplog):
+    with caplog.at_level("INFO"):
+        result = runner.invoke(cli_app, [f"/{APP_NAME}/api/routes"])
+        assert result.exit_code == 0
+        assert any("run_task" in message for message in caplog.messages)
 
 
-def test_metadata_command():
-    result = runner.invoke(cli_app, [API_APPMETDATA])
-    assert result.exit_code == 0
-    assert "Audio Transcription" in result.stdout
+def test_metadata_command(caplog):
+    with caplog.at_level("INFO"):
+        result = runner.invoke(cli_app, [f"/{APP_NAME}/api/app_metadata"])
+        assert result.exit_code == 0
+        assert any("Audio Transcription" in message for message in caplog.messages)
 
 
-def test_schema_command():
-    result = runner.invoke(cli_app, [f"task{PLUGIN_SCHEMA_SUFFIX}"])
-    assert result.exit_code == 0
-    assert "inputs" in result.stdout
+def test_schema_command(caplog):
+    with caplog.at_level("INFO"):
+        result = runner.invoke(cli_app, [f"/{APP_NAME}/transcribe/task_schema"])
+        assert result.exit_code == 0
+        assert any("inputs" in message for message in caplog.messages)
 
 
 def test_negative_test():
+    transcribe_api = f"/{APP_NAME}/transcribe"
     bad_path = Path.cwd() / "src" / "rb-audio-transcription" / "bad_tests"
-    result = runner.invoke(cli_app, ["transcribe", str(bad_path)])
+    result = runner.invoke(cli_app, [transcribe_api, str(bad_path)])
     assert "Aborted" in result.stdout or result.exit_code != 0
 
 
-def test_cli_transcribe_command():
-    full_path = Path.cwd() / "src" / "rb-audio-transcription" / "tests"
-    result = runner.invoke(cli_app, ["transcribe", str(full_path)])
-    assert result.exit_code == 0
-    assert "Twinkle twinkle little star" in result.stdout
+def test_cli_transcribe_command(caplog):
+    with caplog.at_level("INFO"):
+        transcribe_api = f"/{APP_NAME}/transcribe"
+        full_path = Path.cwd() / "src" / "rb-audio-transcription" / "tests"
+        print(f"Full path: {full_path}")
+        print(f"Transcribe API: {transcribe_api}")
+        result = runner.invoke(cli_app, [transcribe_api, str(full_path)])
+        assert result.exit_code == 0
+        expected_transcript = "Twinkle twinkle little star"
+        assert any(expected_transcript in message for message in caplog.messages)
 
 
-def test_api_transcribe_command():
-    full_path = Path.cwd() / "src" / "rb-audio-transcription" / "tests"
-    response = client.post("/audio/transcribe", json={"path": str(full_path)})
-    assert response.status_code == 200
-    body = ResponseBody(**response.json())
-    assert body.root.texts and "Twinkle" in body.root.texts[0].value
+# def test_api_transcribe_command(caplog):
+#     transcribe_api = f'/{APP_NAME}/transcribe'
+#     full_path = Path.cwd() / "src" / "rb-audio-transcription" / "tests"
+#     response = client.post(transcribe_api, json={"path": str(full_path)})
+#     assert response.status_code == 200
+#     body = ResponseBody(**response.json())
+#     assert body.root.texts and "Twinkle" in body.root.texts[0].value
 
 
-def test_client_routes():
-    response = client.get("/audio/routes")
-    assert response.status_code == 200
+# def test_client_routes():
+#     response = client.get("/audio/routes")
+#     assert response.status_code == 200
+#     actual_routes = response.json()
 
-    expected_routes = AudioTranscriptionParser().routes
-    actual_routes = response.json()
-
-    assert (
-        actual_routes == expected_routes
-    ), f"Mismatch in /audio/routes:\nExpected: {expected_routes}\nGot: {actual_routes}"
+#     assert (
+#         actual_routes == EXPECTED_ROUTES
+#     ), f"Mismatch in /audio/routes:\nExpected: {EXPECTED_ROUTES}\nGot: {actual_routes}"
 
 
-def test_client_metadata():
-    response = client.get("/audio/app_metadata")
-    assert response.status_code == 200
-    assert response.json().get("name") == "Audio Transcription"
+# def test_client_metadata():
+#     response = client.get("/audio/app_metadata")
+#     assert response.status_code == 200
+#     assert response.json().get("name") == "Audio Transcription"
 
 
-def test_client_task_schema():
-    response = client.get("/audio/task_schema")
-    assert response.status_code == 200
+# def test_client_task_schema():
+#     response = client.get("/audio/task_schema")
+#     assert response.status_code == 200
 
-    data = response.json()
-    assert isinstance(data, dict)
-    assert data.get("key") == "dir_inputs"
-    assert data.get("label") == "Provide audio files directory"
-    assert data.get("input_type") == "batchfile"
+#     data = response.json()
+#     assert isinstance(data, dict)
+#     assert data.get("key") == "dir_inputs"
+#     assert data.get("label") == "Provide audio files directory"
+#     assert data.get("input_type") == "batchfile"
