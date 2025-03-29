@@ -6,9 +6,6 @@ from typing import TypedDict
 import typer
 from fastapi import HTTPException
 from rb.api.models import (
-    API_APPMETDATA,
-    API_ROUTES,
-    PLUGIN_SCHEMA_SUFFIX,
     BatchTextResponse,
     DirectoryInput,
     InputSchema,
@@ -108,7 +105,7 @@ def cli_parser(path: str):
 
 
 ml_service.add_ml_service(
-    rule=f"/transcribe",
+    rule="/transcribe",
     ml_function=transcribe,
     inputs_cli_parser=typer.Argument(parser=cli_parser, help="Input directory path"),
     task_schema_func=task_schema,

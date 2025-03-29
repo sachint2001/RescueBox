@@ -1,17 +1,11 @@
-from typing import Any, Callable, Dict, List, Mapping, Union, get_type_hints
+from typing import Any, Callable, Dict, Mapping, Union, get_type_hints
 
 from pydantic import BaseModel
 from typing_extensions import assert_never
 
-from rb.api import models
 from rb.lib.errors import BadRequestError
 from rb.api.models import (
-    BatchDirectoryInput,
-    BatchFileInput,
-    BatchTextInput,
-    DirectoryInput,
     EnumParameterDescriptor,
-    FileInput,
     FloatParameterDescriptor,
     Input,
     InputType,
@@ -22,7 +16,6 @@ from rb.api.models import (
     RangedIntParameterDescriptor,
     RequestBody,
     ResponseBody,
-    TextInput,
     TextParameterDescriptor,
     TaskSchema,
     BatchDirectoryInput,
@@ -120,9 +113,9 @@ def ensure_ml_func_parameters_are_typed_dict(
 ):
     hints = get_type_hints(ml_function)
     if not is_typeddict(hints["inputs"]):
-        raise BadRequestError(f"Inputs must be a TypedDict")
+        raise BadRequestError("Inputs must be a TypedDict")
     if "parameters" in hints and not is_typeddict(hints["parameters"]):
-        raise BadRequestError(f"Parameters must be a TypedDict")
+        raise BadRequestError("Parameters must be a TypedDict")
 
 
 def ensure_ml_func_hinting_and_task_schemas_are_valid(
