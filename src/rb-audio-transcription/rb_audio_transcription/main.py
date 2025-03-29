@@ -1,11 +1,10 @@
 """audio transcribe plugin"""
 
 import logging
-from pathlib import Path
-from typing import Annotated, Any, Dict, List, TypedDict
+from typing import TypedDict
 
 import typer
-from fastapi import Body, Depends, HTTPException
+from fastapi import HTTPException
 from rb.api.models import (
     API_APPMETDATA,
     API_ROUTES,
@@ -18,7 +17,6 @@ from rb.api.models import (
     TextResponse,
     TaskSchema,
 )
-from rb.lib.abstract_parser import AbstractParser
 from rb_audio_transcription.model import AudioTranscriptionModel
 from rb.lib.ml_service import MLService
 
@@ -42,10 +40,12 @@ model = AudioTranscriptionModel()
 
 
 class AudioInput(TypedDict):
-    input_dir : DirectoryInput
+    input_dir: DirectoryInput
+
 
 class Parameters(TypedDict):
     pass
+
 
 def task_schema() -> TaskSchema:
     input_schema = InputSchema(
@@ -118,7 +118,9 @@ ml_service.add_ml_service(
     rule=f"/transcribe",
     ml_function=transcribe,
     inputs_cli_parser=typer.Argument(parser=cli_parser, help="Input directory path"),
-    parameters_cli_parser=typer.Argument(parser=parameter_parser, help="Dummy parameter"),
+    parameters_cli_parser=typer.Argument(
+        parser=parameter_parser, help="Dummy parameter"
+    ),
     task_schema_func=task_schema,
     short_title="Transcribe audio files",
     order=0,

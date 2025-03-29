@@ -11,7 +11,7 @@ from rb.api.models import (
     ResponseBody,
     SchemaAPIRoute,
     TaskSchema,
-    AppMetadata
+    AppMetadata,
 )
 from rb.lib.utils import (
     ensure_ml_func_hinting_and_task_schemas_are_valid,
@@ -20,6 +20,7 @@ from rb.lib.utils import (
 )
 
 logger = getLogger(__name__)
+
 
 @dataclass
 class EndpointDetailsNoSchema:
@@ -80,9 +81,9 @@ class MLService(object):
             res = APIRoutes(root=routes).model_dump(mode="json")
             logger.info(res)
             return res
+
         logger.debug("Registered routes command: /api/routes")
-        
-        
+
         @self.app.command(f"/{self.name}/api/app_metadata")
         def get_app_metadata():
             if self._app_metadata is None:
@@ -93,10 +94,7 @@ class MLService(object):
 
     def add_app_metadata(self, name: str, author: str, version: str, info: str):
         self._app_metadata = AppMetadata(
-            name=name,
-            author=author,
-            version=version,
-            info=info
+            name=name, author=author, version=version, info=info
         )
 
     def add_ml_service(
@@ -108,15 +106,17 @@ class MLService(object):
         task_schema_func: Optional[Callable[[], TaskSchema]] = None,
         short_title: Optional[str] = None,
         order: int = 0,
-        validate_inputs = None,
+        validate_inputs=None,
     ):
         ensure_ml_func_parameters_are_typed_dict(ml_function)
-        ensure_ml_func_hinting_and_task_schemas_are_valid(ml_function, task_schema_func())
+        ensure_ml_func_hinting_and_task_schemas_are_valid(
+            ml_function, task_schema_func()
+        )
         endpoint = EndpointDetails(
-            rule=f'/{self.name}' + rule,
-            task_schema_rule=f'/{self.name}' + rule + "/task_schema",
-            sample_payload_rule=f'/{self.name}' + rule + "/sample_payload",
-            payload_schema_rule=f'/{self.name}' + rule + "/payload_schema",
+            rule=f"/{self.name}" + rule,
+            task_schema_rule=f"/{self.name}" + rule + "/task_schema",
+            sample_payload_rule=f"/{self.name}" + rule + "/sample_payload",
+            payload_schema_rule=f"/{self.name}" + rule + "/payload_schema",
             func=ml_function,
             task_schema_func=task_schema_func,
             short_title=short_title or "",
@@ -128,28 +128,39 @@ class MLService(object):
         parameter_type = type_hints.get("parameters", None)
         validate_inputs = validate_inputs if validate_inputs else lambda x: x
 
-        @self.app.command(f'/{self.name}' + endpoint.task_schema_rule)
+        @self.app.command(f"/{self.name}" + endpoint.task_schema_rule)
         def get_task_schema():
             res = endpoint.task_schema_func().model_dump(mode="json")
             logger.info(res)
             return res
+
         logger.debug(f"Registered task schema command: {endpoint.task_schema_rule}")
 
-        @self.app.command(f'/{self.name}' + endpoint.sample_payload_rule)
+        @self.app.command(f"/{self.name}" + endpoint.sample_payload_rule)
         def get_sample_payload():
-            res = schema_get_sample_payload(endpoint.task_schema_func()).model_dump(mode="json")
+            res = schema_get_sample_payload(endpoint.task_schema_func()).model_dump(
+                mode="json"
+            )
             logger.info(res)
             return res
-        logger.debug(f"Registered sample payload command: {endpoint.sample_payload_rule}")
 
-        @self.app.command(f'/{self.name}' + endpoint.payload_schema_rule)
+        logger.debug(
+            f"Registered sample payload command: {endpoint.sample_payload_rule}"
+        )
+
+        @self.app.command(f"/{self.name}" + endpoint.payload_schema_rule)
         def get_payload_schema():
-            res = schema_get_sample_payload(endpoint.task_schema_func()).model_json_schema()
+            res = schema_get_sample_payload(
+                endpoint.task_schema_func()
+            ).model_json_schema()
             logger.info(res)
             return res
-        logger.debug(f"Registered payload schema command: {endpoint.payload_schema_rule}")
-        
-        @self.app.command(f'/{self.name}' + rule)
+
+        logger.debug(
+            f"Registered payload schema command: {endpoint.payload_schema_rule}"
+        )
+
+        @self.app.command(f"/{self.name}" + rule)
         def wrapper(
             inputs: Annotated[
                 input_type,
@@ -166,4 +177,5 @@ class MLService(object):
             res = ml_function(inputs, parameters)
             logger.info(res)
             return res
+
         logger.debug(f"Registered ML service command: {rule}")
