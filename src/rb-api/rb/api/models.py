@@ -12,6 +12,7 @@ from pydantic import BaseModel, ConfigDict, DirectoryPath, Field, FilePath, Root
 API_APPMETDATA = "app_metadata"
 API_ROUTES = "routes"
 PLUGIN_SCHEMA_SUFFIX = "_schema"
+SAMPLE_PAYLOAD_SUFFIX = "sample_payload"
 
 
 class AppMetadata(BaseModel):

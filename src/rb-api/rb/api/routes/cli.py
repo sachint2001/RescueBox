@@ -13,6 +13,7 @@ from rb.api.models import (
     API_APPMETDATA,
     API_ROUTES,
     PLUGIN_SCHEMA_SUFFIX,
+    SAMPLE_PAYLOAD_SUFFIX,
     BatchDirectoryResponse,
     BatchFileResponse,
     BatchTextResponse,
@@ -183,9 +184,10 @@ for plugin in rescuebox_app.registered_groups:
     for command in plugin.typer_instance.registered_commands:
 
         if command.name and (
-            command.name == API_APPMETDATA
-            or command.name == API_ROUTES
+            command.name.endswith(API_APPMETDATA)
+            or command.name.endswith(API_ROUTES)
             or command.name.endswith(PLUGIN_SCHEMA_SUFFIX)
+            or command.name.endswith(SAMPLE_PAYLOAD_SUFFIX)
         ):
             logger.debug(f"plugin command name is {command.name}")
             router.add_api_route(
