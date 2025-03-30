@@ -168,7 +168,7 @@ class MLService(object):
         if parameter_type:
 
             @self.app.command(f"/{self.name}" + rule)
-            def wrapper(
+            def run(
                 inputs: Annotated[
                     input_type,
                     inputs_cli_parser,
@@ -188,7 +188,7 @@ class MLService(object):
         else:
 
             @self.app.command(f"/{self.name}" + rule)
-            def wrapper(
+            def run(
                 inputs: Annotated[
                     input_type,
                     inputs_cli_parser,
