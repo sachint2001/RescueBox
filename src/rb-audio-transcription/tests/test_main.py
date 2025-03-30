@@ -2,7 +2,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 from rb.api.main import app as api_app
-from rb.api.models import API_APPMETDATA, API_ROUTES, PLUGIN_SCHEMA_SUFFIX, ResponseBody
+from rb.api.models import ResponseBody
 from rb_audio_transcription.main import app as cli_app, APP_NAME
 from typer.testing import CliRunner
 
