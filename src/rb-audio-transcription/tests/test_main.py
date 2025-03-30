@@ -61,37 +61,42 @@ def test_cli_transcribe_command(caplog):
         assert any(expected_transcript in message for message in caplog.messages)
 
 
-# def test_api_transcribe_command(caplog):
-#     transcribe_api = f'/{APP_NAME}/transcribe'
-#     full_path = Path.cwd() / "src" / "rb-audio-transcription" / "tests"
-#     response = client.post(transcribe_api, json={"path": str(full_path)})
-#     assert response.status_code == 200
-#     body = ResponseBody(**response.json())
-#     assert body.root.texts and "Twinkle" in body.root.texts[0].value
+def test_api_transcribe_command(caplog):
+    transcribe_api = f"/{APP_NAME}/run"
+    full_path = Path.cwd() / "src" / "rb-audio-transcription" / "tests"
+    response = client.post(transcribe_api, json={"path": str(full_path)})
+    assert response.status_code == 200
+    body = ResponseBody(**response.json())
+    assert body.root.texts and "Twinkle" in body.root.texts[0].value
 
 
-# def test_client_routes():
-#     response = client.get("/audio/routes")
-#     assert response.status_code == 200
-#     actual_routes = response.json()
+def test_client_routes():
+    response = client.get(f"/{APP_NAME}/list_routes")
+    assert response.status_code == 200
+    actual_routes = response.json()
 
-#     assert (
-#         actual_routes == EXPECTED_ROUTES
-#     ), f"Mismatch in /audio/routes:\nExpected: {EXPECTED_ROUTES}\nGot: {actual_routes}"
-
-
-# def test_client_metadata():
-#     response = client.get("/audio/app_metadata")
-#     assert response.status_code == 200
-#     assert response.json().get("name") == "Audio Transcription"
+    assert (
+        actual_routes == EXPECTED_ROUTES
+    ), f"Mismatch in /audio/routes:\nExpected: {EXPECTED_ROUTES}\nGot: {actual_routes}"
 
 
-# def test_client_task_schema():
-#     response = client.get("/audio/task_schema")
-#     assert response.status_code == 200
+def test_client_metadata():
+    response = client.get(f"/{APP_NAME}/get_app_metadata")
+    assert response.status_code == 200
+    assert response.json().get("name") == "Audio Transcription"
 
-#     data = response.json()
-#     assert isinstance(data, dict)
-#     assert data.get("key") == "dir_inputs"
-#     assert data.get("label") == "Provide audio files directory"
-#     assert data.get("input_type") == "batchfile"
+
+def test_client_task_schema():
+    response = client.get(f"/{APP_NAME}/get_task_schema")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert isinstance(data, dict)
+    inputs = data.get("inputs")
+    assert isinstance(inputs, list)
+    assert len(inputs) == 1
+    inputs = inputs[0]
+    assert isinstance(inputs, dict)
+    assert inputs.get("key") == "input_dir"
+    assert inputs.get("label") == "Provide audio files directory"
+    assert inputs.get("input_type") == "directory"
