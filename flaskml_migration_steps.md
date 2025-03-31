@@ -66,7 +66,7 @@ from text_summary.main import app as text_summary_app, APP_NAME as text_summary_
 # Adding the following to the list of plugins in the "plugins" variable
 RescueBoxPlugin(text_summary_app, text_summary_app_name, "Text summarization library"),
 ```
-14. Test your typer app
+14. Test your typer app manually. Go to the root directory of the project and run:
 ```
 poetry run python src/<project_dir>/file_with_typer_app.py --help  # prints all available commands
 
@@ -83,3 +83,6 @@ poetry run python src/text-summary/text_summary/main.py /text_summarization/summ
 
 poetry run python src/text-summary/text_summary/main.py /text_summarization/summarize/task_schema
 ```
+15. Add tests for your app in src/<project_dir>/tests. You can use the tests in src/rb-audio-transcription/tests as a reference.
+16. Make sure all the tests pass and the Github Actions workflow is successful. Refer to .github/workflows/ for the workflow files.
+17. Send your pull request for review. Someone from the team will review your code and provide feedback. The PR requires at least one approval from a team member before it can be merged.
