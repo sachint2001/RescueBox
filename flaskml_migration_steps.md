@@ -29,7 +29,8 @@ project-name = {path = "src/project-name", develop = true}
 poetry install
 ```
 9. (Optional) Modify the dependencies in your projects `pyproject.toml` file until poetry can successfully install all dependencies. Refer to src/rb-audio-transcription/pyproject.toml for an example.
-10. Transition from Flask-ML to RescueBox API. Inside the file that runs your server (or wherever you have your FlaskML app instance), do the following:
+10. IMPORTANT: Submit your Pull Request (PR) for an initial review at this point (send the PR to Prasanna on Slack). List the libraries and the models being used, along with their license information as a comment in the PR. This is to ensure that the libraries and models being used are compatible with the RescueBox project. The team will review your PR and provide feedback. You can continue with the migration steps while waiting for the initial review.
+11. Transition from Flask-ML to RescueBox API. Inside the file that runs your server (or wherever you have your FlaskML app instance), do the following:
   * Replace `from flask_ml.flask_ml_server.models import ...` with `from rb.api.models import ...`.
   * Replace `flask_ml.flask_ml_server import MLServer` with `from rb.lib.ml_service import MLService`.
   * Add APP_NAME=`your-app-name` to the server file. Example: `APP_NAME = "audio-transcription"`.
@@ -57,16 +58,16 @@ server.add_ml_service(
 )
 ### NOTE: You will get a `RuntimeError: Type not yet supported: <class '__main__.Inputs'>` error if you don't use typer.Argument(parse=inputs_cli_parser, ...) in the `add_ml_service` function.
 ```
-11. Define `app = ml_service_object.app` in your server file. This is the Typer app that will be used to run the CLI commands and to generate the API endpoints.
-12. Replace `server.run()` with `app()` within `if __name__ == "__main__":`. This will run the Typer app.
-13. In `rescuebox/plugins/__init__.py`, add your app to the list of `plugins`. Example:
+12. Define `app = ml_service_object.app` in your server file. This is the Typer app that will be used to run the CLI commands and to generate the API endpoints.
+13. Replace `server.run()` with `app()` within `if __name__ == "__main__":`. This will run the Typer app.
+14. In `rescuebox/plugins/__init__.py`, add your app to the list of `plugins`. Example:
 ```python
 from text_summary.main import app as text_summary_app, APP_NAME as text_summary_app_name
 
 # Adding the following to the list of plugins in the "plugins" variable
 RescueBoxPlugin(text_summary_app, text_summary_app_name, "Text summarization library"),
 ```
-14. Test your typer app manually. Go to the root directory of the project and run:
+15. Test your typer app manually. Go to the root directory of the project and run:
 ```
 poetry run python src/<project_dir>/file_with_typer_app.py --help  # prints all available commands
 
@@ -83,6 +84,6 @@ poetry run python src/text-summary/text_summary/main.py /text_summarization/summ
 
 poetry run python src/text-summary/text_summary/main.py /text_summarization/summarize/task_schema
 ```
-15. Add tests for your app in src/<project_dir>/tests. You can use the tests in src/rb-audio-transcription/tests as a reference.
-16. Make sure all the tests pass and the Github Actions workflow is successful. Refer to .github/workflows/ for the workflow files.
-17. Send your pull request for review. Someone from the team will review your code and provide feedback. The PR requires at least one approval from a team member before it can be merged.
+16. Add tests for your app in src/<project_dir>/tests. You can use the tests in src/rb-audio-transcription/tests as a reference.
+17. Make sure all the tests pass and the Github Actions workflow is successful. Refer to .github/workflows/ for the workflow files.
+18. Send your pull request for review. Someone from the team will review your code and provide feedback. The PR requires at least one approval from a team member before it can be merged.
