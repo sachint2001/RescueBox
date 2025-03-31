@@ -23,6 +23,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+
 # Configure UI Elements in RescueBox Desktop
 def task_schema() -> TaskSchema:
     input_schema = InputSchema(
@@ -53,7 +54,7 @@ models_dir = Path("src/age_and_gender_detection/models")
 model = AgeGenderDetector(
     face_detector_path=models_dir / "version-RFB-640.onnx",
     age_classifier_path=models_dir / "age_googlenet.onnx",
-    gender_classifier_path=models_dir / "gender_googlenet.onnx"
+    gender_classifier_path=models_dir / "gender_googlenet.onnx",
 )
 
 
@@ -74,6 +75,7 @@ def cli_parser(image_directory: str):
         raise ValueError(f"Path {image_directory} is not a directory.")
     inputs = Inputs(image_directory=DirectoryInput(path=image_directory))
     return inputs
+
 
 server.add_ml_service(
     rule="/predict",
