@@ -1,8 +1,7 @@
 import pytest
 from unittest.mock import MagicMock, patch
 from pathlib import Path
-from text_summary.summarize import extract_text, process_files, PARSERS
-from text_summary.summary_prompt import PROMPT
+from text_summary.summarize import extract_text, process_files
 
 
 @patch(
