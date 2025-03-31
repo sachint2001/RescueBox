@@ -20,6 +20,7 @@ from pathlib import Path
 
 APP_NAME = "text_summarization"
 
+
 class Inputs(TypedDict):
     input_dir: DirectoryInput
     output_dir: DirectoryInput
@@ -93,8 +94,10 @@ def inputs_cli_parse(input: str) -> Inputs:
         output_dir=DirectoryInput(path=output_dir),
     )
 
+
 def parameters_cli_parse(model: str) -> Parameters:
     return Parameters(model=model)
+
 
 def validate_inputs(inputs: Inputs):
     """
@@ -110,12 +113,10 @@ server.add_ml_service(
     rule="/summarize",
     ml_function=summarize,
     inputs_cli_parser=typer.Argument(
-        parser=inputs_cli_parse,
-        help="Input and output directory paths"
+        parser=inputs_cli_parse, help="Input and output directory paths"
     ),
     parameters_cli_parser=typer.Argument(
-        parser=parameters_cli_parse,
-        help="Model to use for summarization"
+        parser=parameters_cli_parse, help="Model to use for summarization"
     ),
     short_title="Text Summarization",
     order=0,
