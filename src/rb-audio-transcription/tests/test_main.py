@@ -62,7 +62,7 @@ def test_cli_transcribe_command(caplog):
 
 
 def test_api_transcribe_command(caplog):
-    transcribe_api = f"/{APP_NAME}/run"
+    transcribe_api = f"/{APP_NAME}/transcribe"
     full_path = Path.cwd() / "src" / "rb-audio-transcription" / "tests"
     response = client.post(transcribe_api, json={"path": str(full_path)})
     assert response.status_code == 200
@@ -71,7 +71,7 @@ def test_api_transcribe_command(caplog):
 
 
 def test_client_routes():
-    response = client.get(f"/{APP_NAME}/list_routes")
+    response = client.get(f"/{APP_NAME}/api/routes")
     assert response.status_code == 200
     actual_routes = response.json()
 
@@ -81,13 +81,13 @@ def test_client_routes():
 
 
 def test_client_metadata():
-    response = client.get(f"/{APP_NAME}/get_app_metadata")
+    response = client.get(f"/{APP_NAME}/api/app_metadata")
     assert response.status_code == 200
     assert response.json().get("name") == "Audio Transcription"
 
 
 def test_client_task_schema():
-    response = client.get(f"/{APP_NAME}/get_task_schema")
+    response = client.get(f"/{APP_NAME}/transcribe/task_schema")
     assert response.status_code == 200
 
     data = response.json()
