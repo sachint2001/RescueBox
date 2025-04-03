@@ -56,21 +56,26 @@ def test_process_files(
     assert processed_files == {str(Path(mock_output_dir) / "mock_file.txt")}
 
 
+@patch("text_summary.summarize.ensure_model_exists")
 @patch("text_summary.summarize.Path.exists", return_value=False)
-def test_process_files_input_dir_does_not_exist(mock_exists):
+def test_process_files_input_dir_does_not_exist(mock_exists, mock_ensure_model_exists):
     with pytest.raises(ValueError, match="Input directory 'input_dir' does not exist."):
         process_files("gemma3:1b", "input_dir", "output_dir")
 
 
+@patch("text_summary.summarize.ensure_model_exists")
 @patch("text_summary.summarize.Path.exists", return_value=True)
 @patch("text_summary.summarize.Path.is_dir", return_value=False)
-def test_process_files_input_dir_not_a_directory(mock_is_dir, mock_exists):
+def test_process_files_input_dir_not_a_directory(
+    mock_is_dir, mock_exists, mock_ensure_model_exists
+):
     with pytest.raises(
         ValueError, match="Input directory 'input_dir' is not a directory."
     ):
         process_files("gemma3:1b", "input_dir", "output_dir")
 
 
+@patch("text_summary.summarize.ensure_model_exists")
 @patch("text_summary.summarize.PARSERS", {})
 @patch(
     "text_summary.summarize.Path.iterdir", return_value=[Path("unsupported_file.xyz")]
@@ -79,7 +84,7 @@ def test_process_files_input_dir_not_a_directory(mock_is_dir, mock_exists):
 @patch("text_summary.summarize.Path.exists", return_value=True)
 @patch("text_summary.summarize.Path.is_dir", return_value=True)
 def test_process_files_no_supported_files(
-    mock_is_dir, mock_exists, mock_mkdir, mock_iterdir
+    mock_is_dir, mock_exists, mock_mkdir, mock_iterdir, mock_ensure_model_exists
 ):
     with patch("text_summary.summarize.logger.warning") as mock_warning:
         processed_files = process_files("gemma3:1b", "input_dir", "output_dir")
