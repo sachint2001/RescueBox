@@ -40,7 +40,7 @@ class TestAudioTranscription(RBAppTest):
             expected_transcript = "Twinkle twinkle little star"
             assert any(expected_transcript in message for message in caplog.messages)
 
-    def test_api_transcribe_command(self, caplog):
+    def test_api_transcribe_command(self):
         transcribe_api = f"/{APP_NAME}/transcribe"
         full_path = Path.cwd() / "src" / "rb-audio-transcription" / "tests"
         response = self.client.post(transcribe_api, json={"path": str(full_path)})
