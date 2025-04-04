@@ -45,8 +45,6 @@ class RBAppTest(ABC):
                 {
                     "task_schema": f"/{self.app_name}/{rule}/task_schema",
                     "run_task": f"/{self.app_name}/{rule}",
-                    "payload_schema": f"/{self.app_name}/{rule}/payload_schema",
-                    "sample_payload": f"/{self.app_name}/{rule}/sample_payload",
                     "short_title": short_title,
                     "order": order,
                 }
@@ -63,12 +61,6 @@ class RBAppTest(ABC):
             expected_routes = self.get_expected_routes()
             for route in expected_routes:
                 assert any(route["run_task"] in message for message in caplog.messages)
-                assert any(
-                    route["payload_schema"] in message for message in caplog.messages
-                )
-                assert any(
-                    route["sample_payload"] in message for message in caplog.messages
-                )
                 assert any(
                     route["task_schema"] in message for message in caplog.messages
                 )

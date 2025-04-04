@@ -12,7 +12,6 @@ from pydantic import BaseModel, ConfigDict, DirectoryPath, Field, FilePath, Root
 API_APPMETDATA = "app_metadata"
 API_ROUTES = "routes"
 PLUGIN_SCHEMA_SUFFIX = "_schema"
-SAMPLE_PAYLOAD_SUFFIX = "sample_payload"
 
 
 class AppMetadata(BaseModel):
@@ -33,27 +32,8 @@ class SchemaAPIRoute(BaseModel):
     )
     task_schema: Annotated[str, Field(examples=["/tasks/{name_of_task}/task_schema"])]
     run_task: Annotated[str, Field(examples=["/tasks/{name_of_task}"])]
-    payload_schema: Annotated[
-        str, Field(examples=["/tasks/{name_of_task}/payload_schema"])
-    ]
-    sample_payload: Annotated[
-        str, Field(examples=["/tasks/{name_of_task}/sample_payload"])
-    ]
     short_title: Annotated[str, Field(examples=["{A short title for the task}"])]
     order: Annotated[int, Field(examples=[1])]
-
-
-class NoSchemaAPIRoute(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    run_task: Annotated[str, Field(examples=["/tasks/{name_of_task}"])]
-    payload_schema: Annotated[
-        Optional[str], Field(examples=["/tasks/{name_of_task}/payload_schema"])
-    ] = None
-    sample_payload: Annotated[
-        Optional[str], Field(examples=["/tasks/{name_of_task}/sample_payload"])
-    ] = None
 
 
 class FileInput(BaseModel):
@@ -274,11 +254,11 @@ class BatchDirectoryResponse(BaseModel):
     directories: List[DirectoryResponse]
 
 
-class APIRoutes(RootModel[List[Union[SchemaAPIRoute, NoSchemaAPIRoute]]]):
+class APIRoutes(RootModel[List[SchemaAPIRoute]]):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    root: List[Union[SchemaAPIRoute, NoSchemaAPIRoute]]
+    root: List[SchemaAPIRoute]
 
 
 class Input(

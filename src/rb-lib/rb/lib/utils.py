@@ -1,22 +1,14 @@
-from typing import Any, Callable, Dict, Mapping, Union, get_type_hints
+from typing import Any, Callable, Mapping, Union, get_type_hints
 
 from pydantic import BaseModel
 from typing_extensions import assert_never
 
 from rb.lib.errors import BadRequestError
 from rb.api.models import (
-    EnumParameterDescriptor,
-    FloatParameterDescriptor,
-    Input,
     InputType,
-    IntParameterDescriptor,
     NewFileInputType,
     ParameterType,
-    RangedFloatParameterDescriptor,
-    RangedIntParameterDescriptor,
-    RequestBody,
     ResponseBody,
-    TextParameterDescriptor,
     TaskSchema,
     BatchDirectoryInput,
     BatchFileInput,
@@ -25,83 +17,6 @@ from rb.api.models import (
     FileInput,
     TextInput,
 )
-
-
-def schema_get_sample_payload(schema: TaskSchema) -> RequestBody:
-    input_schema = schema.inputs
-    parameter_schema = schema.parameters
-
-    inputs: Dict[str, Input] = {}
-    parameters = {}
-    for input_schema in input_schema:
-        input_type = input_schema.input_type
-        match input_type:
-            case InputType.FILE:
-                inputs[input_schema.key] = Input(root=FileInput(path="./LICENSE"))
-            case NewFileInputType():
-                inputs[input_schema.key] = Input(root=FileInput(path="./LICENSE"))
-            case InputType.DIRECTORY:
-                inputs[input_schema.key] = Input(
-                    root=DirectoryInput(path="./rescuebox")
-                )
-            case InputType.TEXT:
-                inputs[input_schema.key] = Input(
-                    root=TextInput(text="A sample piece of text")
-                )
-            case InputType.TEXTAREA:
-                inputs[input_schema.key] = Input(
-                    root=TextInput(
-                        text="A sample piece of text of text that's long. A sample piece of text of text that's long. A sample piece of text of text that's long. A sample piece of text of text that's long. A sample piece of text of text that's long. A sample piece of text of text that's long. A sample piece of text of text that's long. A sample piece of text of text that's long."
-                    )
-                )
-            case InputType.BATCHFILE:
-                inputs[input_schema.key] = Input(
-                    root=BatchFileInput(
-                        files=[
-                            FileInput(path="./LICENSE"),
-                            FileInput(path="./LICENSE"),
-                        ]
-                    )
-                )
-            case InputType.BATCHTEXT:
-                inputs[input_schema.key] = Input(
-                    root=BatchTextInput(
-                        texts=[
-                            TextInput(text="A sample piece of text 1"),
-                            TextInput(text="A sample piece of text 2"),
-                        ]
-                    )
-                )
-            case InputType.BATCHDIRECTORY:
-                inputs[input_schema.key] = Input(
-                    root=BatchDirectoryInput(
-                        directories=[
-                            DirectoryInput(path="./rescuebox"),
-                            DirectoryInput(path="./rescuebox"),
-                        ]
-                    )
-                )
-            case _:  # pragma: no cover
-                assert_never(input_type)
-    for parameter_schema in parameter_schema:
-        match parameter_schema.value:
-            case RangedFloatParameterDescriptor():
-                parameters[parameter_schema.key] = parameter_schema.value.range.min
-            case FloatParameterDescriptor():
-                parameters[parameter_schema.key] = parameter_schema.value.default
-            case EnumParameterDescriptor():
-                parameters[parameter_schema.key] = parameter_schema.value.enum_vals[
-                    0
-                ].key
-            case TextParameterDescriptor():
-                parameters[parameter_schema.key] = parameter_schema.value.default
-            case RangedIntParameterDescriptor():
-                parameters[parameter_schema.key] = parameter_schema.value.range.min
-            case IntParameterDescriptor():
-                parameters[parameter_schema.key] = parameter_schema.value.default
-            case _:  # pragma: no cover
-                assert_never(parameter_schema.value)
-    return RequestBody(inputs=inputs, parameters=parameters)
 
 
 def is_typeddict(cls):
