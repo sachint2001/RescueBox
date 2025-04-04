@@ -13,7 +13,6 @@ from rb.api.models import (
     API_APPMETDATA,
     API_ROUTES,
     PLUGIN_SCHEMA_SUFFIX,
-    SAMPLE_PAYLOAD_SUFFIX,
     BatchDirectoryResponse,
     BatchFileResponse,
     BatchTextResponse,
@@ -183,7 +182,6 @@ def is_get_request(command: typer.models.CommandInfo) -> bool:
         command.name.endswith(API_APPMETDATA)
         or command.name.endswith(API_ROUTES)
         or command.name.endswith(PLUGIN_SCHEMA_SUFFIX)
-        or command.name.endswith(SAMPLE_PAYLOAD_SUFFIX)
     )
 
 
