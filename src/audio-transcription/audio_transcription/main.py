@@ -39,10 +39,6 @@ class AudioInput(TypedDict):
     input_dir: DirectoryInput
 
 
-class Parameters(TypedDict):
-    pass
-
-
 def task_schema() -> TaskSchema:
     input_schema = InputSchema(
         key="input_dir",
