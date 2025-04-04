@@ -7,7 +7,6 @@ import typer
 
 from rb.api.models import (
     APIRoutes,
-    NoSchemaAPIRoute,
     ResponseBody,
     SchemaAPIRoute,
     TaskSchema,
@@ -51,7 +50,7 @@ class MLService(object):
         """
         self.name = name
         self.app = typer.Typer()
-        self.endpoints: List[EndpointDetailsNoSchema] = []
+        self.endpoints: List[EndpointDetails] = []
         self._app_metadata: Optional[AppMetadata] = None
 
         @self.app.command(f"/{self.name}/api/routes")
@@ -60,21 +59,13 @@ class MLService(object):
             Lists all the routes/endpoints available in the Flask app.
             """
             routes = [
-                (
-                    SchemaAPIRoute(
-                        task_schema=endpoint.task_schema_rule,
-                        run_task=endpoint.rule,
-                        sample_payload=endpoint.sample_payload_rule,
-                        payload_schema=endpoint.payload_schema_rule,
-                        short_title=endpoint.short_title,
-                        order=endpoint.order,
-                    )
-                    if isinstance(endpoint, EndpointDetails)
-                    else NoSchemaAPIRoute(
-                        run_task=endpoint.rule,
-                        sample_payload=endpoint.sample_payload_rule,
-                        payload_schema=endpoint.payload_schema_rule,
-                    )
+                SchemaAPIRoute(
+                    task_schema=endpoint.task_schema_rule,
+                    run_task=endpoint.rule,
+                    sample_payload=endpoint.sample_payload_rule,
+                    payload_schema=endpoint.payload_schema_rule,
+                    short_title=endpoint.short_title,
+                    order=endpoint.order,
                 )
                 for endpoint in self.endpoints
             ]
