@@ -108,6 +108,8 @@ def validate_inputs(inputs: Inputs):
     if not input_dir.exists():
         raise ValueError("Input directory does not exist.")
 
+    return inputs
+
 
 server.add_ml_service(
     rule="/summarize",

@@ -3,6 +3,7 @@ from rb.lib.common_tests import RBAppTest
 from rb.api.models import AppMetadata
 from pathlib import Path
 from unittest.mock import patch
+import json
 
 
 class TestTextSummary(RBAppTest):
@@ -52,3 +53,35 @@ class TestTextSummary(RBAppTest):
             self.cli_app, [summarize_api, input_str, parameter_str]
         )
         assert result.exit_code != 0
+
+    @patch("text_summary.summarize.ensure_model_exists")
+    @patch("text_summary.summarize.summarize", return_value="Mocked summary")
+    def test_api_summarize_command(self, summarize_mock, ensure_model_exists_mock):
+        summarize_api = f"/{APP_NAME}/summarize"
+        full_path = Path.cwd() / "src" / "text-summary" / "test_input"
+        output_path = Path.cwd() / "src" / "text-summary" / "test_output"
+        parameter_str = "gemma3:1b"
+        input_json = {
+            "inputs": {
+                "input_dir": {"path": str(full_path)},
+                "output_dir": {"path": str(output_path)},
+            },
+            "parameters": {"model": parameter_str},
+        }
+        response = self.client.post(summarize_api, json=input_json)
+        assert response.status_code == 200
+        body = response.json()
+        # get files with .txt, .md, and .pdf extensions
+        input_files = [
+            f for f in full_path.glob("*") if f.suffix in [".txt", ".md", ".pdf"]
+        ]
+        expected_files = [
+            str(output_path / (str(file.stem) + ".txt")) for file in input_files
+        ]
+        results = json.loads(body["value"])
+        assert results is not None
+        assert len(results) == len(expected_files)
+        assert set(expected_files) == set(results)
+        for file in results:
+            assert file.endswith(".txt")
+            assert Path(file).read_text() == "Mocked summary"
