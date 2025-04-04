@@ -4,6 +4,7 @@ import typer
 from rb_audio_transcription.main import (
     app as rb_audio_transcription_app,
 )  # type: ignore
+from text_summary.main import app as text_summary_app, APP_NAME as text_summary_app_name  # type: ignore
 
 # Import plugin modules
 from rb_doc_parser.main import app as rb_doc_parser_app  # type: ignore
@@ -22,6 +23,9 @@ plugins: list[RescueBoxPlugin] = [
     RescueBoxPlugin(rb_file_utils_app, "fs", "File Utils"),
     RescueBoxPlugin(rb_doc_parser_app, "docs", "Docs Utils"),
     RescueBoxPlugin(rb_audio_transcription_app, "audio", "Audio transcription library"),
+    RescueBoxPlugin(
+        text_summary_app, text_summary_app_name, "Text summarization library"
+    ),
 ]
 
 # Ensure this module is importable
