@@ -2,7 +2,8 @@ from dataclasses import dataclass
 
 import typer
 from audio_transcription.main import (
-    app as audio_transcription_app, APP_NAME as AUDIO_APP_NAME
+    app as audio_transcription_app,
+    APP_NAME as AUDIO_APP_NAME,
 )  # type: ignore
 from text_summary.main import app as text_summary_app, APP_NAME as TEXT_SUM_APP_NAME  # type: ignore
 
@@ -24,11 +25,11 @@ class RescueBoxPlugin:
 plugins: list[RescueBoxPlugin] = [
     RescueBoxPlugin(rb_file_utils_app, "fs", "File Utils"),
     RescueBoxPlugin(rb_doc_parser_app, "docs", "Docs Utils"),
-    RescueBoxPlugin(audio_transcription_app, AUDIO_APP_NAME, "Audio transcription library"),
-    RescueBoxPlugin(age_gender_app, AGE_GENDER_APP_NAME, "Age and Gender Classifier"),
     RescueBoxPlugin(
-        text_summary_app, TEXT_SUM_APP_NAME, "Text summarization library"
+        audio_transcription_app, AUDIO_APP_NAME, "Audio transcription library"
     ),
+    RescueBoxPlugin(age_gender_app, AGE_GENDER_APP_NAME, "Age and Gender Classifier"),
+    RescueBoxPlugin(text_summary_app, TEXT_SUM_APP_NAME, "Text summarization library"),
 ]
 
 # Ensure this module is importable
