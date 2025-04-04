@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "rb-doc-parser"
+name = "doc-parser"
 version = "0.1.0"
 description = ""
 authors = ["Jagath Jai Kumar <jagath.jaikumar@gmail.com>"]
 
 [tool.poetry.scripts]
-rb-doc-parser = "rb_doc_parser.main:app"
+doc-parser = "doc_parser.main:app"
 
 [tool.poetry.dependencies]
 python = "^3.11"

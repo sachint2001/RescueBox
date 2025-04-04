@@ -11,18 +11,18 @@ runtime_venvdir=os.environ['VIRTUAL_ENV'] + "/Lib/site-packages"
 # get data dependencies  : runtime_venvdir + whisper/assets/mel_filters.npz
 
 hiddenimports = ['torch','torchvision', 'functorch',  'modulefinder', 'timeit']
-hiddenimports += ['fastapi', 'main', 'rb', 'rb-api', 'rb-lib', 'rb-doc-parser', 'audio-transcription', 'rb-file-utils', 'makefun']
+hiddenimports += ['fastapi', 'main', 'rb', 'rb-api', 'rb-lib', 'doc-parser', 'audio-transcription', 'rb-file-utils', 'makefun']
 hiddenimports += collect_submodules('fastapi')
 
 whisper_file = f'{runtime_venvdir}/whisper/assets'
 
 a = Analysis(
     ['src/rb-api/rb/api/main.py'],
-    pathex=[ runtime_venvdir, 'rescuebox', 'src', '.', 'src/rb-api/rb/api' , 'src/audio_transcription', 'src/rb-lib', 'src/rb-api', ' src/rb-doc-parser', 'src/rb-file-utils'],
+    pathex=[ runtime_venvdir, 'rescuebox', 'src', '.', 'src/rb-api/rb/api' , 'src/audio_transcription', 'src/rb-lib', 'src/rb-api', ' src/doc-parser', 'src/rb-file-utils'],
     binaries=[('ffmpeg.exe', ".")],
     datas=[('src/audio-transcription/audio_transcription/app-info.md', 'audio'),
         ('src/rb-api/rb/api/static', 'static'), ('src/rb-api/rb/api/templates', 'templates'),
-         ('src/rb-doc-parser/rb_doc_parser/chat_config.yml', '.'),
+         ('src/doc-parser/doc_parser/chat_config.yml', '.'),
         ('static/favicon.ico', 'static'),( whisper_file, 'whisper/assets')],
     hiddenimports=hiddenimports,
     hookspath=[],

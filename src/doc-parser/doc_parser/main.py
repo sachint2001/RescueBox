@@ -1,7 +1,7 @@
 import typer
 from rb.lib.docs import BASE_WIKI_URL, download_all_wiki_pages  # type: ignore
 from rb.lib.ollama import use_ollama  # type: ignore
-from rb_doc_parser.chat import load_chat_config, stream_output
+from doc_parser.chat import load_chat_config, stream_output
 
 app = typer.Typer()
 

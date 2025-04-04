@@ -440,6 +440,26 @@ files = [
 ]
 
 [[package]]
+name = "doc-parser"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = "^3.11"
+groups = ["main"]
+files = []
+develop = true
+
+[package.dependencies]
+ollama = "*"
+pyyaml = "*"
+rb-lib = "*"
+typer = "*"
+
+[package.source]
+type = "directory"
+url = "src/doc-parser"
+
+[[package]]
 name = "fastapi"
 version = "0.115.12"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
@@ -1830,26 +1850,6 @@ type = "directory"
 url = "src/rb-api"
 
 [[package]]
-name = "rb-doc-parser"
-version = "0.1.0"
-description = ""
-optional = false
-python-versions = "^3.11"
-groups = ["main"]
-files = []
-develop = true
-
-[package.dependencies]
-ollama = "*"
-pyyaml = "*"
-rb-lib = "*"
-typer = "*"
-
-[package.source]
-type = "directory"
-url = "src/rb-doc-parser"
-
-[[package]]
 name = "rb-file-utils"
 version = "0.1.0"
 description = ""
@@ -2542,4 +2542,4 @@ dev = ["black (>=19.3b0) ; python_version >= \"3.6\"", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.13"
-content-hash = "3e52e3a44ac7734546944df8d60c72cd4d1ac1640caf849f7f4bbccf69149b97"
+content-hash = "2b5bf4af5d1a25019cb475197a8c7dc3db52b36742a8817900f664c18728d35c"

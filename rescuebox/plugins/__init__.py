@@ -10,7 +10,7 @@ from text_summary.main import app as text_summary_app, APP_NAME as TEXT_SUM_APP_
 from age_and_gender_detection.main import app as age_gender_app, APP_NAME as AGE_GENDER_APP_NAME  # type: ignore
 
 # Import plugin modules
-from rb_doc_parser.main import app as rb_doc_parser_app  # type: ignore
+from doc_parser.main import app as doc_parser_app  # type: ignore
 from rb_file_utils.main import app as rb_file_utils_app  # type: ignore
 
 
@@ -24,7 +24,7 @@ class RescueBoxPlugin:
 # Define plugins here (NOT dynamically in main.py)
 plugins: list[RescueBoxPlugin] = [
     RescueBoxPlugin(rb_file_utils_app, "fs", "File Utils"),
-    RescueBoxPlugin(rb_doc_parser_app, "docs", "Docs Utils"),
+    RescueBoxPlugin(doc_parser_app, "docs", "Docs Utils"),
     RescueBoxPlugin(
         audio_transcription_app, AUDIO_APP_NAME, "Audio transcription library"
     ),
