@@ -4,7 +4,6 @@ import logging
 from typing import TypedDict
 
 import typer
-from fastapi import HTTPException
 from rb.api.models import (
     BatchTextResponse,
     DirectoryInput,
@@ -69,16 +68,13 @@ def transcribe(inputs: AudioInput) -> ResponseBody:
     return ResponseBody(root=response)
 
 
-
 def cli_parser(path: str):
     """
     Parses CLI input path into a Pydantic object.
     """
     try:
         logger.debug(f"Parsing CLI input path: {path}")
-        return AudioInput(
-            input_dir=DirectoryInput(path=path)
-        )
+        return AudioInput(input_dir=DirectoryInput(path=path))
     except Exception as e:
         logger.error(f"Error parsing CLI input: {e}")
         raise typer.Abort()

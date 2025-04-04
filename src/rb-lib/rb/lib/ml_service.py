@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from logging import getLogger
 from typing import Any, Callable, List, Optional, get_type_hints, Annotated
 
-from fastapi import Body, Depends
+from fastapi import Body
 import typer
 
 from rb.api.models import (
