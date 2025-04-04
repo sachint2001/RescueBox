@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "rb-file-utils"
+name = "file-utils"
 version = "0.1.0"
 description = ""
 authors = ["Jagath Jai Kumar <jagath.jaikumar@gmail.com>"]
-packages = [{include = "rb_file_utils"}]
+packages = [{include = "file_utils"}]
 
 [tool.poetry.scripts]
-rb-file-utils = "rb_file_utils.main:app"
+file-utils = "file_utils.main:app"
 
 [tool.poetry.dependencies]
 python = "^3.11"

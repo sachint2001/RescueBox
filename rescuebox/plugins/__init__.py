@@ -11,7 +11,7 @@ from age_and_gender_detection.main import app as age_gender_app, APP_NAME as AGE
 
 # Import plugin modules
 from doc_parser.main import app as doc_parser_app  # type: ignore
-from rb_file_utils.main import app as rb_file_utils_app  # type: ignore
+from file_utils.main import app as file_utils_app  # type: ignore
 
 
 @dataclass(frozen=True)
@@ -23,7 +23,7 @@ class RescueBoxPlugin:
 
 # Define plugins here (NOT dynamically in main.py)
 plugins: list[RescueBoxPlugin] = [
-    RescueBoxPlugin(rb_file_utils_app, "fs", "File Utils"),
+    RescueBoxPlugin(file_utils_app, "fs", "File Utils"),
     RescueBoxPlugin(doc_parser_app, "docs", "Docs Utils"),
     RescueBoxPlugin(
         audio_transcription_app, AUDIO_APP_NAME, "Audio transcription library"

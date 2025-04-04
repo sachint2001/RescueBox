@@ -481,6 +481,23 @@ all = ["email-validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.5)", "httpx (>
 standard = ["email-validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.5)", "httpx (>=0.23.0)", "jinja2 (>=3.1.5)", "python-multipart (>=0.0.18)", "uvicorn[standard] (>=0.12.0)"]
 
 [[package]]
+name = "file-utils"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = "^3.11"
+groups = ["main"]
+files = []
+develop = true
+
+[package.dependencies]
+typer = "*"
+
+[package.source]
+type = "directory"
+url = "src/file-utils"
+
+[[package]]
 name = "filelock"
 version = "3.18.0"
 description = "A platform independent file lock."
@@ -1850,23 +1867,6 @@ type = "directory"
 url = "src/rb-api"
 
 [[package]]
-name = "rb-file-utils"
-version = "0.1.0"
-description = ""
-optional = false
-python-versions = "^3.11"
-groups = ["main"]
-files = []
-develop = true
-
-[package.dependencies]
-typer = "*"
-
-[package.source]
-type = "directory"
-url = "src/rb-file-utils"
-
-[[package]]
 name = "rb-lib"
 version = "0.1.0"
 description = ""
@@ -2542,4 +2542,4 @@ dev = ["black (>=19.3b0) ; python_version >= \"3.6\"", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.13"
-content-hash = "2b5bf4af5d1a25019cb475197a8c7dc3db52b36742a8817900f664c18728d35c"
+content-hash = "7be160c4c43822c9fddc73db576b64483270008b122264f26b69d60e8fd2b30e"

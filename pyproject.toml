@@ -23,7 +23,7 @@ numpy = "1.26.4"
 
 rb-lib = { path = "src/rb-lib", develop = true }
 
-rb-file-utils = { path = "src/rb-file-utils", develop = true }
+file-utils = { path = "src/file-utils", develop = true }
 doc-parser = { path = "src/doc-parser", develop = true }
 audio-transcription = { path = "src/audio-transcription", develop = true }
 age-and-gender-detection = { path = "src/age_and_gender_detection", develop = true }
