@@ -1,13 +1,17 @@
 from dataclasses import dataclass
 
 import typer
-from rb_audio_transcription.main import (
-    app as rb_audio_transcription_app,
+from audio_transcription.main import (
+    app as audio_transcription_app,
+    APP_NAME as AUDIO_APP_NAME,
 )  # type: ignore
+from text_summary.main import app as text_summary_app, APP_NAME as TEXT_SUM_APP_NAME  # type: ignore
+
+from age_and_gender_detection.main import app as age_gender_app, APP_NAME as AGE_GENDER_APP_NAME  # type: ignore
 
 # Import plugin modules
-from rb_doc_parser.main import app as rb_doc_parser_app  # type: ignore
-from rb_file_utils.main import app as rb_file_utils_app  # type: ignore
+from doc_parser.main import app as doc_parser_app  # type: ignore
+from file_utils.main import app as file_utils_app  # type: ignore
 
 
 @dataclass(frozen=True)
@@ -19,9 +23,13 @@ class RescueBoxPlugin:
 
 # Define plugins here (NOT dynamically in main.py)
 plugins: list[RescueBoxPlugin] = [
-    RescueBoxPlugin(rb_file_utils_app, "fs", "File Utils"),
-    RescueBoxPlugin(rb_doc_parser_app, "docs", "Docs Utils"),
-    RescueBoxPlugin(rb_audio_transcription_app, "audio", "Audio transcription library"),
+    RescueBoxPlugin(file_utils_app, "fs", "File Utils"),
+    RescueBoxPlugin(doc_parser_app, "docs", "Docs Utils"),
+    RescueBoxPlugin(
+        audio_transcription_app, AUDIO_APP_NAME, "Audio transcription library"
+    ),
+    RescueBoxPlugin(age_gender_app, AGE_GENDER_APP_NAME, "Age and Gender Classifier"),
+    RescueBoxPlugin(text_summary_app, TEXT_SUM_APP_NAME, "Text summarization library"),
 ]
 
 # Ensure this module is importable

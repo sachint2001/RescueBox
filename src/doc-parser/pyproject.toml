@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "doc-parser"
+version = "0.1.0"
+description = ""
+authors = ["Jagath Jai Kumar <jagath.jaikumar@gmail.com>"]
+
+[tool.poetry.scripts]
+doc-parser = "doc_parser.main:app"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+ollama = "*"
+typer = "*"
+rb-lib = "*"
+pyyaml = "*"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

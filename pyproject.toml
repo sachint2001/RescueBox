@@ -17,21 +17,18 @@ llvmlite = "^0.44.0"
 pytest = "^8.3.4"
 httpx = "^0.28.1"
 # add dependencies common to all plugins here
-numba = "^0.61.0"
-torch = "2.2.2"
-numpy = "1.26.4"
+numpy = "2.1.0"
 
 rb-lib = { path = "src/rb-lib", develop = true }
 
-rb-file-utils = { path = "src/rb-file-utils", develop = true }
-rb-doc-parser = { path = "src/rb-doc-parser", develop = true }
-rb-audio-transcription = { path = "src/rb-audio-transcription", develop = true }
+file-utils = { path = "src/file-utils", develop = true }
+doc-parser = { path = "src/doc-parser", develop = true }
+audio-transcription = { path = "src/audio-transcription", develop = true }
+age-and-gender-detection = { path = "src/age_and_gender_detection", develop = true }
+text-summary = {path = "src/text-summary", develop = true}
 
 # Don't add new packages here, add them appropriately in the list above
 beautifulsoup4 = "^4.13.3"
-
-
-
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"

@@ -652,7 +652,7 @@ files = [
 ]
 
 [[package]]
-name = "rb-doc-parser"
+name = "doc-parser"
 version = "0.1.0"
 description = ""
 optional = false
@@ -668,10 +668,10 @@ typer = "*"
 
 [package.source]
 type = "directory"
-url = "../rb-doc-parser"
+url = "../doc-parser"
 
 [[package]]
-name = "rb-file-utils"
+name = "file-utils"
 version = "0.1.0"
 description = ""
 optional = false
@@ -684,7 +684,7 @@ typer = "*"
 
 [package.source]
 type = "directory"
-url = "../rb-file-utils"
+url = "../file-utils"
 
 [[package]]
 name = "rb-lib"
@@ -736,8 +736,8 @@ develop = true
 
 [package.dependencies]
 pyyaml = "^6.0.2"
-rb-doc-parser = {path = "src/rb-doc-parser", develop = true}
-rb-file-utils = {path = "src/rb-file-utils", develop = true}
+doc-parser = {path = "src/doc-parser", develop = true}
+file-utils = {path = "src/file-utils", develop = true}
 rb-lib = {path = "src/rb-lib", develop = true}
 requests = "^2.32.3"
 typer = "^0.12.5"
