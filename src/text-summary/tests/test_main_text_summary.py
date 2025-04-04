@@ -56,7 +56,7 @@ class TestTextSummary(RBAppTest):
 
     @patch("text_summary.summarize.ensure_model_exists")
     @patch("text_summary.summarize.summarize", return_value="Mocked summary")
-    def test_api_summarize_command(self, summarize_mock, ensure_model_exists_mock):
+    def test_api_summarize(self, summarize_mock, ensure_model_exists_mock):
         summarize_api = f"/{APP_NAME}/summarize"
         full_path = Path.cwd() / "src" / "text-summary" / "test_input"
         output_path = Path.cwd() / "src" / "text-summary" / "test_output"
