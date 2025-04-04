@@ -84,6 +84,6 @@ poetry run python src/text-summary/text_summary/main.py /text_summarization/summ
 
 poetry run python src/text-summary/text_summary/main.py /text_summarization/summarize/task_schema
 ```
-16. Add tests for your app in src/<project_dir>/tests. You can use the tests in src/rb-audio-transcription/tests as a reference.
+16. Add tests for your app in src/<project_dir>/tests. You can use the tests in src/audio-transcription/tests as a reference.
 17. Make sure all the tests pass and the Github Actions workflow is successful. Refer to .github/workflows/ for the workflow files.
 18. Send your pull request for review. Someone from the team will review your code and provide feedback. The PR requires at least one approval from a team member before it can be merged.

@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "rb-audio-transcription"
+name = "audio-transcription"
 version = "0.1.0"
 description = ""
 authors = ["Rescue Lab <sahilsharma@umass.edu>"]
-packages = [{include = "rb_audio_transcription"}]
+packages = [{include = "audio_transcription"}]
 
 [tool.poetry.scripts]
-rb-audio-transcription = "rb_audio_transcription.main:app"
+audio-transcription = "audio_transcription.main:app"
 
 [tool.poetry.dependencies]
 cmake = "*"

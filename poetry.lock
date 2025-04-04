@@ -97,6 +97,24 @@ files = [
 test = ["coverage", "mypy", "pexpect", "ruff", "wheel"]
 
 [[package]]
+name = "audio-transcription"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = "^3.11"
+groups = ["main"]
+files = []
+develop = true
+
+[package.dependencies]
+cmake = "*"
+openai-whisper = "*"
+
+[package.source]
+type = "directory"
+url = "src/audio-transcription"
+
+[[package]]
 name = "beautifulsoup4"
 version = "4.13.3"
 description = "Screen-scraping library"
@@ -1812,24 +1830,6 @@ type = "directory"
 url = "src/rb-api"
 
 [[package]]
-name = "rb-audio-transcription"
-version = "0.1.0"
-description = ""
-optional = false
-python-versions = "^3.11"
-groups = ["main"]
-files = []
-develop = true
-
-[package.dependencies]
-cmake = "*"
-openai-whisper = "*"
-
-[package.source]
-type = "directory"
-url = "src/rb-audio-transcription"
-
-[[package]]
 name = "rb-doc-parser"
 version = "0.1.0"
 description = ""
@@ -2542,4 +2542,4 @@ dev = ["black (>=19.3b0) ; python_version >= \"3.6\"", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.13"
-content-hash = "6866bde9d7891faf9479f1c43c1f9060945ebe94212d8783df1300b5825cb12f"
+content-hash = "3e52e3a44ac7734546944df8d60c72cd4d1ac1640caf849f7f4bbccf69149b97"

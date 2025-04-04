@@ -25,7 +25,7 @@ rb-lib = { path = "src/rb-lib", develop = true }
 
 rb-file-utils = { path = "src/rb-file-utils", develop = true }
 rb-doc-parser = { path = "src/rb-doc-parser", develop = true }
-rb-audio-transcription = { path = "src/rb-audio-transcription", develop = true }
+audio-transcription = { path = "src/audio-transcription", develop = true }
 age-and-gender-detection = { path = "src/age_and_gender_detection", develop = true }
 text-summary = {path = "src/text-summary", develop = true}
 

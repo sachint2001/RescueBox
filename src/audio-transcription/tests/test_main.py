@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from rb.api.models import ResponseBody
-from rb_audio_transcription.main import app as cli_app, APP_NAME, task_schema
+from audio_transcription.main import app as cli_app, APP_NAME, task_schema
 from rb.lib.common_tests import RBAppTest
 from rb.api.models import AppMetadata
 
@@ -25,14 +25,14 @@ class TestAudioTranscription(RBAppTest):
 
     def test_negative_test(self):
         transcribe_api = f"/{APP_NAME}/transcribe"
-        bad_path = Path.cwd() / "src" / "rb-audio-transcription" / "bad_tests"
+        bad_path = Path.cwd() / "src" / "audio-transcription" / "bad_tests"
         result = self.runner.invoke(cli_app, [transcribe_api, str(bad_path)])
         assert "Aborted" in result.stdout or result.exit_code != 0
 
     def test_cli_transcribe_command(self, caplog):
         with caplog.at_level("INFO"):
             transcribe_api = f"/{APP_NAME}/transcribe"
-            full_path = Path.cwd() / "src" / "rb-audio-transcription" / "tests"
+            full_path = Path.cwd() / "src" / "audio-transcription" / "tests"
             print(f"Full path: {full_path}")
             print(f"Transcribe API: {transcribe_api}")
             result = self.runner.invoke(cli_app, [transcribe_api, str(full_path)])
@@ -42,7 +42,7 @@ class TestAudioTranscription(RBAppTest):
 
     def test_api_transcribe_command(self):
         transcribe_api = f"/{APP_NAME}/transcribe"
-        full_path = Path.cwd() / "src" / "rb-audio-transcription" / "tests"
+        full_path = Path.cwd() / "src" / "audio-transcription" / "tests"
         response = self.client.post(transcribe_api, json={"path": str(full_path)})
         assert response.status_code == 200
         body = ResponseBody(**response.json())

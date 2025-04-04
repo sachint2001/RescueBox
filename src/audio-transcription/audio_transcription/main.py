@@ -14,7 +14,7 @@ from rb.api.models import (
     TextResponse,
     TaskSchema,
 )
-from rb_audio_transcription.model import AudioTranscriptionModel
+from audio_transcription.model import AudioTranscriptionModel
 from rb.lib.ml_service import MLService
 
 logger = logging.getLogger(__name__)
