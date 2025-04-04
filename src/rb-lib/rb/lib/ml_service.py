@@ -15,7 +15,6 @@ from rb.api.models import (
 from rb.lib.utils import (
     ensure_ml_func_hinting_and_task_schemas_are_valid,
     ensure_ml_func_parameters_are_typed_dict,
-    schema_get_sample_payload,
 )
 
 logger = getLogger(__name__)
@@ -24,8 +23,6 @@ logger = getLogger(__name__)
 @dataclass
 class EndpointDetailsNoSchema:
     rule: str
-    payload_schema_rule: str
-    sample_payload_rule: str
     func: Callable[..., ResponseBody]
 
 
@@ -62,8 +59,6 @@ class MLService(object):
                 SchemaAPIRoute(
                     task_schema=endpoint.task_schema_rule,
                     run_task=endpoint.rule,
-                    sample_payload=endpoint.sample_payload_rule,
-                    payload_schema=endpoint.payload_schema_rule,
                     short_title=endpoint.short_title,
                     order=endpoint.order,
                 )
@@ -106,8 +101,6 @@ class MLService(object):
         endpoint = EndpointDetails(
             rule=f"/{self.name}" + rule,
             task_schema_rule=f"/{self.name}" + rule + "/task_schema",
-            sample_payload_rule=f"/{self.name}" + rule + "/sample_payload",
-            payload_schema_rule=f"/{self.name}" + rule + "/payload_schema",
             func=ml_function,
             task_schema_func=task_schema_func,
             short_title=short_title or "",
@@ -131,30 +124,6 @@ class MLService(object):
             return res
 
         logger.debug(f"Registered task schema command: {endpoint.task_schema_rule}")
-
-        @self.app.command(endpoint.sample_payload_rule)
-        def get_sample_payload():
-            res = schema_get_sample_payload(endpoint.task_schema_func()).model_dump(
-                mode="json"
-            )
-            logger.info(res)
-            return res
-
-        logger.debug(
-            f"Registered sample payload command: {endpoint.sample_payload_rule}"
-        )
-
-        @self.app.command(endpoint.payload_schema_rule)
-        def get_payload_schema():
-            res = schema_get_sample_payload(
-                endpoint.task_schema_func()
-            ).model_json_schema()
-            logger.info(res)
-            return res
-
-        logger.debug(
-            f"Registered payload schema command: {endpoint.payload_schema_rule}"
-        )
 
         if parameter_type:
 
