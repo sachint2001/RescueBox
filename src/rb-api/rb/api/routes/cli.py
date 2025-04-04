@@ -176,33 +176,36 @@ def command_callback(command: typer.models.CommandInfo):
     return wrapper
 
 
-# Register routes for each plugin command
+def is_get_request(command: typer.models.CommandInfo) -> bool:
+    """Determine if the command should be registered as a GET request"""
+    return (
+        command.name.endswith(API_APPMETDATA)
+        or command.name.endswith(API_ROUTES)
+        or command.name.endswith(PLUGIN_SCHEMA_SUFFIX)
+    )
+
+
 for plugin in rescuebox_app.registered_groups:
     router = APIRouter()
-
+    router_with_prefix = APIRouter()
     for command in plugin.typer_instance.registered_commands:
-
-        if command.name and (
-            command.name == API_APPMETDATA
-            or command.name == API_ROUTES
-            or command.name.endswith(PLUGIN_SCHEMA_SUFFIX)
-        ):
+        if command.name:
             logger.debug(f"plugin command name is {command.name}")
-            router.add_api_route(
-                f"/{command.callback.__name__}",
-                endpoint=command_callback(command),
-                methods=["GET"],
-                name=command.callback.__name__,
-            )
-            # FIXME: prefix /api to make desktop call happy for now , eventually this will go away
-            # GOAL : /audio/routes is valid /api/routes should no longer work
-            cli_to_api_router.include_router(router, prefix="/api", tags=[plugin.name])
-
+            params = {
+                "endpoint": command_callback(command),
+                "name": command.name,
+            }
+            if is_get_request(command):
+                params["methods"] = ["GET"]
+            else:
+                params["methods"] = ["POST"]
+                params["response_model"] = ResponseBody
             logger.debug(
-                f"Registering FastAPI route for {plugin.name} desktop call: {command.callback.__name__}"
+                f"Registering FastAPI route for {plugin.name} command: {command.name}"
             )
+            router.add_api_route(command.name, **params)
         else:
-            router.add_api_route(
+            router_with_prefix.add_api_route(
                 f"/{command.callback.__name__}",
                 endpoint=command_callback(command),
                 methods=["POST"],
@@ -212,6 +215,7 @@ for plugin in rescuebox_app.registered_groups:
             logger.debug(
                 f"Registering FastAPI route for {plugin.name} command: {command.callback.__name__}"
             )
-            cli_to_api_router.include_router(
-                router, prefix=f"/{plugin.name}", tags=[plugin.name]
-            )
+    cli_to_api_router.include_router(
+        router_with_prefix, prefix=f"/{plugin.name}", tags=[plugin.name]
+    )
+    cli_to_api_router.include_router(router, tags=[plugin.name])
