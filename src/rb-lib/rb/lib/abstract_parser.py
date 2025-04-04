@@ -31,11 +31,6 @@ class AbstractParser(ABC):
         """Parse CLI input."""
         pass
 
-    @abstractmethod
-    def validate_inputs(self, inputs: Dict[str, Any]):
-        """Validate input data."""
-        pass
-
     @property
     @abstractmethod
     def routes(self) -> List[Dict[str, Any]]:

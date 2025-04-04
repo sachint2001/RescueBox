@@ -96,8 +96,10 @@ class TestAgeGender(RBAppTest):
         age_gender_api = f"/{APP_NAME}/predict"
         input_path = Path("src/age_and_gender_detection/test_images")
         input = {
-            "image_directory": {
-                "path": str(input_path),
+            "inputs": {
+                "image_directory": {
+                    "path": str(input_path),
+                }
             }
         }
         response = self.client.post(age_gender_api, json=input)

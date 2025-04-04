@@ -99,18 +99,6 @@ def parameters_cli_parse(model: str) -> Parameters:
     return Parameters(model=model)
 
 
-def validate_inputs(inputs: Inputs):
-    """
-    Validates that the input directory exists.
-    """
-    input_dir = inputs["input_dir"].path
-
-    if not input_dir.exists():
-        raise ValueError("Input directory does not exist.")
-
-    return inputs
-
-
 server.add_ml_service(
     rule="/summarize",
     ml_function=summarize,
@@ -123,7 +111,6 @@ server.add_ml_service(
     short_title="Text Summarization",
     order=0,
     task_schema_func=task_schema,
-    validate_inputs=validate_inputs,
 )
 
 app = server.app

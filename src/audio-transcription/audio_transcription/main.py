@@ -57,7 +57,7 @@ def transcribe(inputs: AudioInput) -> ResponseBody:
     """Transcribe audio files"""
 
     print("Processing transcription...")
-    dirpath = inputs.path
+    dirpath = inputs["input_dir"].path
 
     results = model.transcribe_files_in_directory(dirpath)
     result_texts = [
@@ -69,28 +69,6 @@ def transcribe(inputs: AudioInput) -> ResponseBody:
     return ResponseBody(root=response)
 
 
-def validate_inputs(inputs: DirectoryInput):
-    """
-    Validates that the input directory exists and has files.
-    """
-    try:
-        logger.debug("Validating inputs...")
-        dirpath = inputs.path
-        files = [file for file in dirpath.iterdir() if file.is_file()]
-
-        if len(files) < 1:
-            raise HTTPException(
-                status_code=400,
-                detail="No files in given directory for transcription.",
-            )
-        logger.debug("Validation successful.")
-        return inputs
-    except Exception as e:
-        logger.error(f"Invalid path inputs: {e}")
-        raise HTTPException(
-            status_code=400, detail=f"Invalid path inputs for transcription: {e}"
-        )
-
 
 def cli_parser(path: str):
     """
@@ -98,7 +76,9 @@ def cli_parser(path: str):
     """
     try:
         logger.debug(f"Parsing CLI input path: {path}")
-        return DirectoryInput(path=path)
+        return AudioInput(
+            input_dir=DirectoryInput(path=path)
+        )
     except Exception as e:
         logger.error(f"Error parsing CLI input: {e}")
         raise typer.Abort()
@@ -111,7 +91,6 @@ ml_service.add_ml_service(
     task_schema_func=task_schema,
     short_title="Transcribe audio files",
     order=0,
-    validate_inputs=validate_inputs,
 )
 
 app = ml_service.app

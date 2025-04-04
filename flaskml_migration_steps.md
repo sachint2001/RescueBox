@@ -39,7 +39,6 @@ poetry install
   * Define new functions:
     * cli_parser - takes in a list of arguments (passing in through the cli) and returns the input (first parameter to your ML function) to the ML function.
     * param_parser (OPTIONAL - only if you have parameters to your ML function) - takes in a list of arguments (passing in through the cli) and returns the parameters (second parameter to your ML function) to the ML function.
-    * validate_inputs (OPTIONAL but encouraged) - takes in the first parameter to your ML function and validates it. This is where you can add any validation logic you want. Ex: check if the file exists, check if the file is a valid audio file, etc.
   * Call the `add_ml_service` function with the required parameters for each ML endpoint in your application. Example:
 ```python
 import typer
@@ -54,7 +53,6 @@ server.add_ml_service(
     short_title="Text Summarization",
     order=0,
     task_schema_func=task_schema,
-    validate_inputs=validate_inputs,
 )
 ### NOTE: You will get a `RuntimeError: Type not yet supported: <class '__main__.Inputs'>` error if you don't use typer.Argument(parse=inputs_cli_parser, ...) in the `add_ml_service` function.
 ```

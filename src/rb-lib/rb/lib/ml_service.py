@@ -92,7 +92,6 @@ class MLService(object):
         task_schema_func: Optional[Callable[[], TaskSchema]] = None,
         short_title: Optional[str] = None,
         order: int = 0,
-        validate_inputs=None,
     ):
         ensure_ml_func_parameters_are_typed_dict(ml_function)
         ensure_ml_func_hinting_and_task_schemas_are_valid(
@@ -115,8 +114,6 @@ class MLService(object):
                 "parameters_cli_parser is required when parameters are used in the function signature."
             )
 
-        validate_inputs = validate_inputs if validate_inputs else lambda x: x
-
         @self.app.command(endpoint.task_schema_rule)
         def get_task_schema():
             res = endpoint.task_schema_func().model_dump(mode="json")
@@ -133,7 +130,6 @@ class MLService(object):
                     input_type,
                     inputs_cli_parser,
                     Body(embed=True),
-                    Depends(validate_inputs),
                 ],
                 parameters: Annotated[
                     parameter_type,
@@ -153,7 +149,6 @@ class MLService(object):
                     input_type,
                     inputs_cli_parser,
                     Body(embed=True),
-                    Depends(validate_inputs),
                 ],
             ):
                 res = ml_function(inputs)

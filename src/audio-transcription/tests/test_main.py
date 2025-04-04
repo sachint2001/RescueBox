@@ -43,7 +43,14 @@ class TestAudioTranscription(RBAppTest):
     def test_api_transcribe_command(self):
         transcribe_api = f"/{APP_NAME}/transcribe"
         full_path = Path.cwd() / "src" / "audio-transcription" / "tests"
-        response = self.client.post(transcribe_api, json={"path": str(full_path)})
+        input_json = {
+            "inputs": {
+                "input_dir": {
+                    "path": str(full_path),
+                }
+            }
+        }
+        response = self.client.post(transcribe_api, json=input_json)
         assert response.status_code == 200
         body = ResponseBody(**response.json())
         assert body.root.texts and "Twinkle" in body.root.texts[0].value

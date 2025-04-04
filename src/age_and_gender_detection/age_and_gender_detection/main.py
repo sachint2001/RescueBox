@@ -86,13 +86,6 @@ def cli_parser(path: str):
         return typer.Abort()
 
 
-def validate_inputs(inputs: Inputs):
-    """
-    Validates that the input directory exists and has files.
-    """
-    return inputs
-
-
 server.add_ml_service(
     rule="/predict",
     ml_function=predict,
@@ -100,7 +93,6 @@ server.add_ml_service(
     short_title="Age and Gender Classifier",
     order=0,
     task_schema_func=task_schema,
-    validate_inputs=validate_inputs,
 )
 
 app = server.app
