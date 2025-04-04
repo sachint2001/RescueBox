@@ -4,6 +4,7 @@ import typer
 from rb_audio_transcription.main import (
     app as rb_audio_transcription_app,
 )  # type: ignore
+from text_summary.main import app as text_summary_app, APP_NAME as text_summary_app_name  # type: ignore
 
 from age_and_gender_detection.main import app as age_gender_app, APP_NAME as AGE_GENDER_APP_NAME  # type: ignore
 
@@ -25,6 +26,9 @@ plugins: list[RescueBoxPlugin] = [
     RescueBoxPlugin(rb_doc_parser_app, "docs", "Docs Utils"),
     RescueBoxPlugin(rb_audio_transcription_app, "audio", "Audio transcription library"),
     RescueBoxPlugin(age_gender_app, AGE_GENDER_APP_NAME, "Age and Gender Classifier"),
+    RescueBoxPlugin(
+        text_summary_app, text_summary_app_name, "Text summarization library"
+    ),
 ]
 
 # Ensure this module is importable
