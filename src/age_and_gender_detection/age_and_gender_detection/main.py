@@ -13,6 +13,9 @@ from pathlib import Path
 import logging
 import json
 import typer
+import onnxruntime
+
+onnxruntime.set_default_logger_severity(3)
 
 APP_NAME = "age-gender"
 
@@ -67,13 +70,26 @@ def predict(inputs: Inputs) -> ResponseBody:
     return ResponseBody(root=response)
 
 
-def cli_parser(image_directory: str):
-    image_directory = Path(image_directory)
-    if not image_directory.exists():
-        raise ValueError(f"Directory {image_directory} does not exist.")
-    if not image_directory.is_dir():
-        raise ValueError(f"Path {image_directory} is not a directory.")
-    inputs = Inputs(image_directory=DirectoryInput(path=image_directory))
+def cli_parser(path: str):
+    image_directory = path
+    try:
+        logger.debug(f"Parsing CLI input path: {image_directory}")
+        image_directory = Path(image_directory)
+        if not image_directory.exists():
+            raise ValueError(f"Directory {image_directory} does not exist.")
+        if not image_directory.is_dir():
+            raise ValueError(f"Path {image_directory} is not a directory.")
+        inputs = Inputs(image_directory=DirectoryInput(path=image_directory))
+        return inputs
+    except Exception as e:
+        logger.error(f"Error parsing CLI input: {e}")
+        return typer.Abort()
+
+
+def validate_inputs(inputs: Inputs):
+    """
+    Validates that the input directory exists and has files.
+    """
     return inputs
 
 
@@ -84,6 +100,7 @@ server.add_ml_service(
     short_title="Age and Gender Classifier",
     order=0,
     task_schema_func=task_schema,
+    validate_inputs=validate_inputs,
 )
 
 app = server.app
