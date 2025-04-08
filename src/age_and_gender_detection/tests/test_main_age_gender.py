@@ -18,17 +18,19 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
 
+TEST_IMAGES_DIR = Path("src/age_and_gender_detection/test_images")
+
 EXPECTED_OUTPUT = {
-    "src/age_and_gender_detection/test_images/bella.jpg": [
+    str(TEST_IMAGES_DIR / "bella.jpg"): [
         {"box": [246, 257, 847, 858], "gender": "Female", "age": "(25-32)"}
     ],
-    "src/age_and_gender_detection/test_images/bruce.jpg": [
+    str(TEST_IMAGES_DIR / "bruce.jpg"): [
         {"box": [51, 122, 328, 399], "gender": "Male", "age": "(25-32)"}
     ],
-    "src/age_and_gender_detection/test_images/baby.jpg": [
+    str(TEST_IMAGES_DIR / "baby.jpg"): [
         {"box": [345, 217, 592, 464], "gender": "Female", "age": "(0-2)"}
     ],
-    "src/age_and_gender_detection/test_images/kid.jpg": [
+    str(TEST_IMAGES_DIR / "kid.jpg"): [
         {"box": [476, 143, 696, 364], "gender": "Male", "age": "(4-6)"}
     ],
 }
