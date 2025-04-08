@@ -232,9 +232,14 @@
     "productName": "RescueBox-Desktop",
     "appId": "org.UMass-Rescue.RescueBox-Desktop",
     "asar": true,
-    "asarUnpack": "**\\*.{node,dll}",
+    "asarUnpack": [
+      "**\\*.{node,dll}",
+      "./assets/**/*",
+      "./assets/**/**/*"
+    ],
     "files": [
       "dist",
+      "build/**/*",
       "node_modules",
       "package.json"
     ],
@@ -266,11 +271,6 @@
           "type": "link",
           "path": "/Applications"
         }
-      ]
-    },
-    "win": {
-      "target": [
-        "nsis"
       ]
     },
     "linux": {
