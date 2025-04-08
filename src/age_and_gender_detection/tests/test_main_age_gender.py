@@ -81,10 +81,13 @@ class TestAgeGender(RBAppTest):
             result = self.runner.invoke(self.cli_app, [age_gender_api, str(input_path)])
             assert result.exit_code == 0, f"Error: {result.output}"
             expected_files = [
-                "src/age_and_gender_detection/test_images/bella.jpg",
-                "src/age_and_gender_detection/test_images/bruce.jpg",
-                "src/age_and_gender_detection/test_images/baby.jpg",
-                "src/age_and_gender_detection/test_images/kid.jpg",
+                str(Path(s))
+                for s in [
+                    "src/age_and_gender_detection/test_images/bella.jpg",
+                    "src/age_and_gender_detection/test_images/bruce.jpg",
+                    "src/age_and_gender_detection/test_images/baby.jpg",
+                    "src/age_and_gender_detection/test_images/kid.jpg",
+                ]
             ]
             for expected_file in expected_files:
                 assert any(expected_file in message for message in caplog.messages)
