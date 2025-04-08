@@ -9,9 +9,8 @@ license = {text = "MIT License"}
 readme = "README.md"
 dependencies = [
     "numpy",
-    "onnxruntime (==1.21.0)",
-    "opencv-python (>=4.11.0.86,<5.0.0.0)",
-    "flask-ml (>=0.2.5,<0.3.0)"
+    "onnxruntime",
+    "opencv-python"
 ]
 
 
