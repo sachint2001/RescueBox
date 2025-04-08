@@ -8,8 +8,8 @@ authors = [
 license = {text = "MIT"}
 readme = "README.md"
 dependencies = [
-    "ollama",
-    "pypdf2"
+    "ollama=*",
+    "pypdf2=*"
 ]
 
 

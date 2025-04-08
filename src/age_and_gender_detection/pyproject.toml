@@ -8,9 +8,9 @@ authors = [
 license = {text = "MIT License"}
 readme = "README.md"
 dependencies = [
-    "numpy",
-    "onnxruntime",
-    "opencv-python"
+    "numpy=*",
+    "onnxruntime=*",
+    "opencv-python=*"
 ]
 
 
