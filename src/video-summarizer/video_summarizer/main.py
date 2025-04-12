@@ -123,21 +123,20 @@ def summarize_video(inputs: Inputs, parameters: Parameters):
     return ResponseBody(FileResponse(path=out_path_summary, file_type="text"))
 
 def inputs_cli_parse(input: str) -> Inputs:
-    print(f"Received input: {input}")  # Add this for debugging
-    input_dir, output_dir = input.split(",")
-    input_dir = Path(input_dir)
-    output_dir = Path(output_dir)
-    if not input_dir.exists():
+    input_file, output_directory = input.split(",")
+    input_file = Path(input_file)
+    output_directory = Path(output_directory)
+    if not input_file.exists():
         raise ValueError("Input directory does not exist.")
-    if not output_dir.exists():
-        output_dir.mkdir(parents=True, exist_ok=True)
+    if not output_directory.exists():
+        output_directory.mkdir(parents=True, exist_ok=True)
     return Inputs(
-        input_dir=DirectoryInput(path=input_dir),
-        output_dir=DirectoryInput(path=output_dir),
+        input_file=FileInput(path=input_file),
+        output_directory=DirectoryInput(path=output_directory),
     )
 
-def parameters_cli_parse(model: str) -> Parameters:
-    return Parameters(model=model)
+def parameters_cli_parse(fps: str) -> Parameters:
+    return Parameters(fps=fps)
 
 server=MLService(APP_NAME)
 server.add_app_metadata(
