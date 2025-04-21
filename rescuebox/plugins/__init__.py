@@ -31,7 +31,7 @@ plugins: list[RescueBoxPlugin] = [
     ),
     RescueBoxPlugin(age_gender_app, AGE_GENDER_APP_NAME, "Age and Gender Classifier"),
     RescueBoxPlugin(text_summary_app, TEXT_SUM_APP_NAME, "Text summarization library"),
-    RescueBoxPlugin(video_summarizer_app_summary_app, VIDEO_SUMMARIZER_APP_NAME, "Video summarization library"),
+    RescueBoxPlugin(video_summarizer_app, VIDEO_SUMMARIZER_APP_NAME, "Video summarization library"),
 
 ]
 
