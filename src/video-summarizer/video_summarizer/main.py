@@ -111,6 +111,7 @@ def summarize_video(inputs: Inputs, parameters: Parameters):
     fps = parameters.get("fps", 1)
 
     # Step 1: Extract frames from the video
+    Path(FRAME_FOLDER).mkdir(parents=True, exist_ok=True)
     extract_frames_ffmpeg(inputs["input_file"].path, FRAME_FOLDER, fps=fps)
     
     images = sorted([
