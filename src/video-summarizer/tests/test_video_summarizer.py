@@ -61,7 +61,6 @@ class TestVideoSummarizer(RBAppTest):
         for file in new_files:
             file.unlink()
 
-
     # Test the API call including audio transcription and check whether 3 files were created at the end
     @patch("video_summarizer.main.extract_frames_ffmpeg")
     @patch("video_summarizer.main.extract_audio_ffmpeg")
@@ -108,3 +107,117 @@ class TestVideoSummarizer(RBAppTest):
         # Delete the generated files
         for file in new_files:
             file.unlink()
+
+
+    def test_input_file_missing(self):
+        summarize_api = f"/{APP_NAME}/summarize-video"
+        input_json = {
+            "inputs": {
+                "input_file": {"path": "nonexistent_file.mp4"},
+                "output_directory": {"path": "/tmp"}
+            },
+            "parameters": {
+                "fps": 1,
+                "audio_tran": "yes"
+            }
+        }
+        response = self.client.post(summarize_api, json=input_json)
+        assert response.status_code != 200, "Expected failure for missing input file"
+
+
+    def test_output_directory_missing(self):
+        summarize_api = f"/{APP_NAME}/summarize-video"
+        input_path = Path.cwd() / "src" / "video-summarizer" / "tests" / "test_inputs" / "sample_video.mp4"
+        input_json = {
+            "inputs": {
+                "input_file": {"path": str(input_path)},
+                "output_directory": {"path": "/nonexistent_output_dir"}
+            },
+            "parameters": {
+                "fps": 1,
+                "audio_tran": "yes"
+            }
+        }
+        response = self.client.post(summarize_api, json=input_json)
+        assert response.status_code != 200, "Expected failure for missing output directory"
+
+    @patch("video_summarizer.main.extract_frames_ffmpeg")
+    @patch("video_summarizer.main.ollama.generate", return_value={"response": "Mocked summary no audio"})
+    def test_cli_without_audio_transcription(self, mock_ollama, mock_frames):
+        summarize_api = f"/{APP_NAME}/summarize-video"
+
+        input_path = Path.cwd() / "src" / "video-summarizer" / "tests" / "test_inputs" / "sample_video.mp4"
+        output_path = Path.cwd() / "src" / "video-summarizer" / "tests" / "test_outputs"
+        input_str = f"{str(input_path)},{str(output_path)}"
+
+        for file in output_path.glob("*.txt"):
+            file.unlink()
+
+        try:
+            result = self.runner.invoke(self.cli_app, [summarize_api, input_str, "1,no"])
+            assert result.exit_code == 0, f"CLI without audio failed: {result.output}"
+
+            output_files = list(output_path.glob("*.txt"))
+            assert len(output_files) == 2, f"Expected 2 files, found {len(output_files)}"
+
+        finally:
+            for file in output_path.glob("*.txt"):
+                file.unlink()
+
+
+    @patch("video_summarizer.main.extract_frames_ffmpeg")
+    @patch("video_summarizer.main.ollama.generate", return_value={"response": "Mocked summary no audio"})
+    def test_api_without_audio_transcription(self, mock_ollama, mock_frames):
+        summarize_api = f"/{APP_NAME}/summarize-video"
+        
+        input_path = Path.cwd() / "src" / "video-summarizer" / "tests" / "test_inputs" / "sample_video.mp4"
+        output_path = Path.cwd() / "src" / "video-summarizer" / "tests" / "test_outputs"
+
+        for file in output_path.glob("*.txt"):
+            file.unlink()
+
+        input_json = {
+            "inputs": {
+                "input_file": {"path": str(input_path)},
+                "output_directory": {"path": str(output_path)}
+            },
+            "parameters": {
+                "fps": 1,
+                "audio_tran": "no"
+            }
+        }
+
+        try:
+            response = self.client.post(summarize_api, json=input_json)
+            assert response.status_code == 200
+
+            result = response.json()
+            summary_path = Path(result["path"])
+
+            assert summary_path.exists(), "Summary file not created"
+            summary_content = summary_path.read_text()
+            assert "Mocked summary no audio" in summary_content
+
+            output_files = list(output_path.glob("*.txt"))
+            assert len(output_files) == 2, f"Expected 2 files, found {len(output_files)}"
+
+        finally:
+            for file in output_path.glob("*.txt"):
+                file.unlink()
+
+    def test_invalid_fps(self):
+        summarize_api = f"/{APP_NAME}/summarize-video"
+        input_path = Path.cwd() / "src" / "video-summarizer" / "tests" / "test_inputs" / "sample_video.mp4"
+        output_path = Path.cwd() / "src" / "video-summarizer" / "tests" / "test_outputs"
+        input_json = {
+            "inputs": {
+                "input_file": {"path": str(input_path)},
+                "output_directory": {"path": str(output_path)}
+            },
+            "parameters": {
+                "fps": 0,
+                "audio_tran": "yes"
+            }
+        }
+        response = self.client.post(summarize_api, json=input_json)
+        assert response.status_code != 200, "Expected failure for invalid FPS value"
