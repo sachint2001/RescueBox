@@ -142,34 +142,32 @@ class TestVideoSummarizer(RBAppTest):
         assert response.status_code != 200, "Expected failure for missing output directory"
 
     @patch("video_summarizer.main.extract_frames_ffmpeg")
-    @patch("video_summarizer.main.extract_audio_ffmpeg")
     @patch("video_summarizer.main.ollama.generate", return_value={"response": "Mocked summary no audio"})
-    def test_cli_without_audio_transcription(self, mock_ollama, mock_audio, mock_frames):
+    def test_cli_without_audio_transcription(self, mock_ollama, mock_frames):
         summarize_api = f"/{APP_NAME}/summarize-video"
+
         input_path = Path.cwd() / "src" / "video-summarizer" / "tests" / "test_inputs" / "sample_video.mp4"
         output_path = Path.cwd() / "src" / "video-summarizer" / "tests" / "test_outputs"
-        
-        input_str = f"{str(input_path)},{str(output_path)}"  
+        input_str = f"{str(input_path)},{str(output_path)}"
+
         for file in output_path.glob("*.txt"):
             file.unlink()
 
         try:
-            result = self.runner.invoke(self.cli_app, [summarize_api, input_str, "1", "no"])
-            assert result.exit_code == 0, f"CLI without audio failed:\nOutput:\n{result.output}\nException:\n{result.exception}"
+            result = self.runner.invoke(self.cli_app, [summarize_api, input_str, "1,no"])
+            assert result.exit_code == 0, f"CLI without audio failed: {result.output}"
 
             output_files = list(output_path.glob("*.txt"))
-            assert len(output_files) == 1, f"Expected 1 summary file, found {len(output_files)}"
+            assert len(output_files) == 2, f"Expected 2 files, found {len(output_files)}"
 
         finally:
             for file in output_path.glob("*.txt"):
                 file.unlink()
 
 
-
     @patch("video_summarizer.main.extract_frames_ffmpeg")
-    @patch("video_summarizer.main.extract_audio_ffmpeg")
     @patch("video_summarizer.main.ollama.generate", return_value={"response": "Mocked summary no audio"})
-    def test_api_without_audio_transcription(self, mock_ollama, mock_audio, mock_frames):
+    def test_api_without_audio_transcription(self, mock_ollama, mock_frames):
         summarize_api = f"/{APP_NAME}/summarize-video"
         
         input_path = Path.cwd() / "src" / "video-summarizer" / "tests" / "test_inputs" / "sample_video.mp4"
@@ -201,12 +199,11 @@ class TestVideoSummarizer(RBAppTest):
             assert "Mocked summary no audio" in summary_content
 
             output_files = list(output_path.glob("*.txt"))
-            assert len(output_files) == 1, f"Expected 1 summary file, found {len(output_files)}"
+            assert len(output_files) == 2, f"Expected 2 files, found {len(output_files)}"
 
         finally:
             for file in output_path.glob("*.txt"):
                 file.unlink()
-
 
     def test_invalid_fps(self):
         summarize_api = f"/{APP_NAME}/summarize-video"
