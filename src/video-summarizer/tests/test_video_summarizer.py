@@ -17,7 +17,7 @@ class TestVideoSummarizer(RBAppTest):
             name="Video Summarization",
             author="Sachin Thomas & Priyanka Bengaluru Anil",
             version="1.0.0",
-            info="Video Summarization using Gemma model.",
+            info="Video Summarization with audio transcription.",
             plugin_name=APP_NAME,
         )
 
@@ -38,15 +38,17 @@ class TestVideoSummarizer(RBAppTest):
         input_str = f"{str(input_path)},{str(output_path)}"
 
         # Track initial .txt files
-        initial_files = set(output_path.glob("*.txt"))
+        initial_files = set(output_path.glob("*.txt")) | set(output_path.glob("*.csv"))
         
         result = self.runner.invoke(self.cli_app, [summarize_api, input_str, "1,yes"])
         
         assert result.exit_code == 0, f"CLI failed: {result.output}"
         
-        final_files = set(output_path.glob("*.txt"))
+        # final_files = set(output_path.glob("*.txt"))
+        final_files = set(output_path.glob("*.txt")) | set(output_path.glob("*.csv"))
         new_files = final_files - initial_files
         assert len(new_files) == 3, "No new output files generated."
+        print("new:", new_files)
 
         # Check whether summary is correct:
         summary_file = next((f for f in new_files if f.name.startswith("summary_") and f.name.endswith(".txt")), None)
@@ -83,7 +85,7 @@ class TestVideoSummarizer(RBAppTest):
         }
 
         # Track initial .txt files
-        initial_files = set(output_path.glob("*.txt"))
+        initial_files = set(output_path.glob("*.txt")) | set(output_path.glob("*.csv"))
 
         response = self.client.post(summarize_api, json=input_json)
         assert response.status_code == 200
@@ -91,7 +93,7 @@ class TestVideoSummarizer(RBAppTest):
         result = response.json()
         assert result is not None
 
-        final_files = set(output_path.glob("*.txt"))
+        final_files = set(output_path.glob("*.txt")) | set(output_path.glob("*.csv"))
         new_files = final_files - initial_files
         assert len(new_files) == 3, "No new output files generated."
 
@@ -152,16 +154,20 @@ class TestVideoSummarizer(RBAppTest):
 
         for file in output_path.glob("*.txt"):
             file.unlink()
+        for file in output_path.glob("*.csv"):
+            file.unlink()
 
         try:
             result = self.runner.invoke(self.cli_app, [summarize_api, input_str, "1,no"])
             assert result.exit_code == 0, f"CLI without audio failed: {result.output}"
 
-            output_files = list(output_path.glob("*.txt"))
+            output_files = list(output_path.glob("*.txt")) + list(output_path.glob("*.csv"))
             assert len(output_files) == 2, f"Expected 2 files, found {len(output_files)}"
 
         finally:
             for file in output_path.glob("*.txt"):
+                file.unlink()
+            for file in output_path.glob("*.csv"):
                 file.unlink()
 
 
@@ -174,6 +180,8 @@ class TestVideoSummarizer(RBAppTest):
         output_path = Path.cwd() / "src" / "video-summarizer" / "tests" / "test_outputs"
 
         for file in output_path.glob("*.txt"):
+            file.unlink()
+        for file in output_path.glob("*.csv"):
             file.unlink()
 
         input_json = {
@@ -198,11 +206,13 @@ class TestVideoSummarizer(RBAppTest):
             summary_content = summary_path.read_text()
             assert "Mocked summary no audio" in summary_content
 
-            output_files = list(output_path.glob("*.txt"))
+            output_files = list(output_path.glob("*.txt")) + list(output_path.glob("*.csv"))
             assert len(output_files) == 2, f"Expected 2 files, found {len(output_files)}"
 
         finally:
             for file in output_path.glob("*.txt"):
+                file.unlink()
+            for file in output_path.glob("*.csv"):
                 file.unlink()
 
     def test_invalid_fps(self):

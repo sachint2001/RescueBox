@@ -24,6 +24,8 @@ import typer
 import ollama
 import logging
 import whisper
+import csv
+import re
 
 logging.basicConfig(
     level=logging.INFO,
@@ -79,6 +81,19 @@ def create_video_summary_schema() -> TaskSchema:
 
     return TaskSchema(inputs=[input_schema, output_schema], parameters=[fps_param_schema, audio_tran_schema])
 
+def clean_caption_formatting(caption):
+    if not isinstance(caption, str):
+        caption = str(caption)
+
+    # Replace newlines and carriage returns with a space
+    caption = caption.replace('\n', ' ').replace('\r', ' ')
+
+    # Replace multiple spaces with a single space
+    caption = re.sub(r'\s+', ' ', caption)
+
+    # Trim leading/trailing spaces
+    return caption.strip()
+
 def extract_frames_ffmpeg(video_path, output_folder, fps=1):
     os.makedirs(output_folder, exist_ok=True)
     output_pattern = os.path.join(output_folder, "frame_%04d.jpg")
@@ -130,7 +145,7 @@ def summarize_video(inputs: Inputs, parameters: Parameters):
 
     # Step 3: Prepare output paths
     out_path = Path(inputs["output_directory"].path)
-    out_path_captions = str(out_path / f"captions_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
+    out_path_captions = str(out_path / f"captions_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
     out_path_transcription = str(out_path / f"transcription_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
     out_path_summary = str(out_path / f"summary_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
 
@@ -138,37 +153,42 @@ def summarize_video(inputs: Inputs, parameters: Parameters):
     # Step 4: Describe each frame
     ollama.generate(MODEL_NAME, "You will receive frames from a video in sequence, one at a time. For each frame, generate a concise one-sentence description.")
 
-    summaries = []
+    summaries = {}
     for idx, image in enumerate(images, start=1):
         prompt = f"This is frame {idx} of the video. Summarize it in one sentence."
         try:
             response = ollama.generate(MODEL_NAME, prompt, images=[image])
-            summaries.append(f"Frame {idx}: {response['response']}")
+            formatted_response = clean_caption_formatting(response['response'])
+            summaries[idx] = formatted_response
         except Exception as e:
-            summaries.append(f"Frame {idx}: Error - {e}")
+            summaries[idx] = f"Error - {e}"
 
     # Step 5: Summarize the whole video using both visual + audio data
     if audio_transcribe:
         summary_prompt = (
             "Here are one-sentence descriptions of each frame of a video:\n" +
-            "\n".join(summaries) +
+            "\n".join(f"Frame {frame_id}: {caption}" for frame_id, caption in summaries.items()) + 
             "\nHere is the transcribed audio from the video:\n" +
             transcribed_text +
-            "\nSummarize the overall video in a few sentences using both visual and audio context. Keep in mind that certain frames occuring one after the other could be describing the same incident that has just occured."
+            "\nSummarize the overall video in a few sentences using both visual and audio context."
         )
     else:
         summary_prompt = (
         "Here are one-sentence descriptions of each frame of a video:\n" +
-        "\n".join(summaries) +
+        "\n".join(f"Frame {frame_id}: {caption}" for frame_id, caption in summaries.items()) +
         "\nSummarize the overall video in a few sentences. Keep in mind that certain frames occuring one after the other could be describing the same incident that has just occured."
         )
 
     final_response = ollama.generate(MODEL_NAME, summary_prompt)
     final_summary = final_response['response']
 
-    with open(out_path_captions, 'w', encoding='utf-8') as f:
-        for line in summaries:
-            f.write(line + '\n')
+    # Step 6: Write results to files
+    with open(out_path_captions, 'w', encoding='utf-8', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["Frame", "Caption"])  # Header
+
+        for frame_id, caption in summaries.items():
+            writer.writerow([f"Frame {frame_id}", caption])
     
     if audio_transcribe:
         with open(out_path_transcription, 'w', encoding='utf-8') as f:
@@ -206,7 +226,7 @@ server.add_app_metadata(
     name="Video Summarization",
     author="Sachin Thomas & Priyanka Bengaluru Anil",
     version="1.0.0",
-    info="Video Summarization using Gemma model."
+    info="Video Summarization with audio transcription."
 )
 
 server.add_ml_service(
