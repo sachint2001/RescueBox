@@ -60,8 +60,8 @@ def create_video_summary_schema() -> TaskSchema:
     )
     fps_param_schema = ParameterSchema(
         key="fps",
-        label="Frame Rate (fps)",
-        subtitle="Set how many frames per second to extract from the video",
+        label="Frame Extraction Interval",
+        subtitle="Set interval of how often to extract frames (eg: 2 means 1 frame every 2 seconds)",
         value={
         "parameterType": "int",
         "default": 1
@@ -100,7 +100,7 @@ def extract_frames_ffmpeg(video_path, output_folder, fps=1):
     command = [
         "ffmpeg",
         "-i", video_path,
-        "-vf", f"fps={fps}",
+        "-vf", f"fps={1/fps}",
         output_pattern
     ]
     subprocess.run(command, check=True)
