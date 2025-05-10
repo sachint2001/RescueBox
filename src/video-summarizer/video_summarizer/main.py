@@ -7,8 +7,6 @@ from rb.api.models import (
     ParameterSchema,
     TaskSchema,
     ResponseBody,
-    TextResponse,
-    BatchTextResponse,
     FileInput,
     InputSchema,
     InputType,
@@ -16,7 +14,6 @@ from rb.api.models import (
     FileResponse,
     EnumParameterDescriptor,
     EnumVal,
-    IntParameterDescriptor
 )
 from datetime import datetime
 from pathlib import Path

@@ -1,12 +1,8 @@
-import pytest
-import json
 from pathlib import Path
 from unittest.mock import patch
 from video_summarizer.main import app as cli_app, APP_NAME, create_video_summary_schema
 from rb.lib.common_tests import RBAppTest
 from rb.api.models import AppMetadata
-
-APP_NAME = "video_summarizer"
 
 class TestVideoSummarizer(RBAppTest):
     def setup_method(self):
