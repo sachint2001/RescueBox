@@ -246,7 +246,7 @@ server.add_ml_service(
     ),
     parameters_cli_parser=typer.Argument(
         parser=parameters_cli_parse,
-        help="Set how many frames per second to extract from the video",
+        help="Set interval of how often to extract frames (eg: 2 means 1 frame every 2 seconds)",
     ),
     short_title="Video Summarization",
     order=0,
